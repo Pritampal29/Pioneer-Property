@@ -1,0 +1,42 @@
+@mixin comm_heading {
+  font-size: 36px;
+  color: $black;
+  font-weight: 700;
+  font-family: "Roboto";
+  text-align: center;
+  text-transform: capitalize;
+}
+.comm_heading {
+  font-size: 36px;
+  color: $black;
+  font-weight: 700;
+  font-family: "Roboto";
+  text-align: center;
+  text-transform: capitalize;
+}
+@mixin comm_sub_heading {
+  font-size: 16px;
+  color: $sub;
+  font-weight: 400;
+  font-family: "Roboto";
+  text-align: center;
+}
+.comm_sub_heading {
+  font-size: 16px;
+  color: $sub;
+  font-weight: 400;
+  font-family: "Roboto";
+  text-align: center;
+}
+@mixin comm_para {
+  font-size: 15px;
+  color: $faded-black;
+  font-weight: 400;
+  font-family: "Poppins";
+}
+.comm_para {
+  font-size: 15px;
+  color: $faded-black;
+  font-weight: 400;
+  font-family: "Poppins";
+}
