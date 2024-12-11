@@ -85,9 +85,9 @@ get_header();
 
 
                 <!-- Modal -->
-                <div class="modal fade" id="exampleModal-<?php echo $team_id; ?>" tabindex="-1"
+                <div class="modal fade teams-modal" id="exampleModal-<?php echo $team_id; ?>" tabindex="-1"
                     aria-labelledby="exampleModalLabel-<?php echo $team_id; ?>" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-dialog modal-dialog-centered modal-xl">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <div class="mdl_img">
@@ -96,7 +96,7 @@ get_header();
                                 <h2 class="modal-title" id="exampleModalLabel-<?php echo $team_id; ?>">
                                     <?php the_title();?></h2>
                                 <!-- <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button> -->
+                                    aria-label="Close"></button> -->
                             </div>
                             <div class="modal-body">
                                 <?php the_content();?>

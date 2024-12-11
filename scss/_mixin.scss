@@ -1,16 +1,16 @@
 @mixin comm_heading {
   font-size: 36px;
   color: $black;
-  font-weight: 700;
-  font-family: "Roboto";
+  font-weight: 400;
+  // font-family: "Roboto";
   text-align: center;
   text-transform: capitalize;
 }
 .comm_heading {
   font-size: 36px;
   color: $black;
-  font-weight: 700;
-  font-family: "Roboto";
+  font-weight: 400;
+  // font-family: "Roboto";
   text-align: center;
   text-transform: capitalize;
 }
@@ -18,14 +18,14 @@
   font-size: 16px;
   color: $sub;
   font-weight: 400;
-  font-family: "Roboto";
+  // font-family: "Roboto";
   text-align: center;
 }
 .comm_sub_heading {
   font-size: 16px;
   color: $sub;
   font-weight: 400;
-  font-family: "Roboto";
+  // font-family: "Roboto";
   text-align: center;
 }
 @mixin comm_para {
