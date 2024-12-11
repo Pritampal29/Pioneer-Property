@@ -217,20 +217,20 @@ if ( defined( 'JETPACK__VERSION' ) ) {
 
 /**
 * #################################################################
-*		Add Extra Option Page For Amenities for Property
+*		Add Extra Option Page For Location for Property
 * #################################################################
 */
-	// if( function_exists('acf_add_options_page') ) {
-	// 	acf_add_options_page(array(
-	// 		'page_title'    => 'Property Amenities',
-	// 		'menu_title'    => 'Amenities',
-	// 		'menu_slug'     => 'property-amenities',
-	// 		'capability'    => 'edit_posts',
-	// 		'redirect'      => false,
-	// 		'icon_url'      => 'dashicons-awards',
-	// 		'position' 		=> 3
-	// 	));
-	// }
+	if( function_exists('acf_add_options_page') ) {
+		acf_add_options_page(array(
+			'page_title'    => 'Property Location',
+			'menu_title'    => 'Location',
+			'menu_slug'     => 'property-location',
+			'capability'    => 'edit_posts',
+			'redirect'      => false,
+			'icon_url'      => 'dashicons-location',
+			'position' 		=> 3
+		));
+	}
 
 
 /**
@@ -547,65 +547,69 @@ if ( defined( 'JETPACK__VERSION' ) ) {
                 <span class="prop_name"><?php the_title();?></span>
 
                 <?php
-												$Price = get_field('property_price', $post->ID);
-												if ($Price) { 
-													$min_price = $Price['min_price'];
-													$max_price = $Price['max_price'];
+				$Price = get_field('property_price', $post->ID);
+				if ($Price) { 
+					$min_price = $Price['min_price'];
+					$max_price = $Price['max_price'];
 
-													if ($min_price >= 10000000) {
-														$min_price_formatted = number_format($min_price / 10000000, 2) . ' cr';
-													} elseif ($min_price >= 100000) {
-														$min_price_formatted = number_format($min_price / 100000, 2) . ' lakh';
-													} elseif($min_price >= 1000) {
-														$min_price_formatted = number_format($min_price / 1000, 2) . ' K';
-													}
+					if ($min_price >= 10000000) {
+						$min_price_formatted = number_format($min_price / 10000000, 2) . ' cr';
+					} elseif ($min_price >= 100000) {
+						$min_price_formatted = number_format($min_price / 100000, 2) . ' lakh';
+					} elseif($min_price >= 1000) {
+						$min_price_formatted = number_format($min_price / 1000, 2) . ' K';
+					}
 
-													if ($max_price >= 10000000) {
-														$max_price_formatted = number_format($max_price / 10000000, 2) . ' cr';
-													} elseif ($max_price >= 100000) {
-														$max_price_formatted = number_format($max_price / 100000, 2) . ' lakh';
-													} elseif($max_price >= 1000) {
-														$max_price_formatted = number_format($max_price / 1000, 2) . ' K';
-													}
-													?>
+					if ($max_price >= 10000000) {
+						$max_price_formatted = number_format($max_price / 10000000, 2) . ' cr';
+					} elseif ($max_price >= 100000) {
+						$max_price_formatted = number_format($max_price / 100000, 2) . ' lakh';
+					} elseif($max_price >= 1000) {
+						$max_price_formatted = number_format($max_price / 1000, 2) . ' K';
+					}
+				?>
+
                 <span class="prop_price">
                     ₹ <?php if($min_price_formatted) { echo $min_price_formatted; } ?> -
                     <?php if($max_price_formatted) { echo $max_price_formatted; } ?>
                 </span>
-                <!-- <span class="prop_price">₹56 lakh - 95 lakh</span> -->
+
 
                 <?php } ?>
 
             </div>
             <p class="prop_dev"><?php echo get_field('property_contractor_name',$post->ID);?></p>
-            <?php $rera_no = get_field('property_rera_no',$post->ID);
-																if($rera_no){ ?>
-            <span class="prop_rera">RERA No.: <?php echo $rera_no; ?></span>
+            <?php $poss_date = get_field('possession_date',$post->ID);
+				if($poss_date) { 
+					$date = DateTime::createFromFormat('d/m/Y', $poss_date);
+					$formatted_date = $date->format('jS F Y');?>
+            <span class="capsule">Possession Date: <?php echo $formatted_date;?></span>
             <?php } ?>
             <?php 
-								$property_map_value = get_field('main_location',$post->ID);
-								$property_map_address = get_field('property_live_map',$post->ID);
-								if($property_map_value) { ?>
+				$property_map_value = get_field('main_location',$post->ID);
+				$property_map_address = get_field('property_live_map',$post->ID);
+				if($property_map_value) { ?>
             <p id="location">
                 <i class="fa-solid fa-location-dot me-2"></i><a
                     href="<?php echo $property_map_address;?>"><?php echo $property_map_value;?></a>
             </p>
             <?php } ?>
-            <?php $poss_date = get_field('possession_date',$post->ID);
-															if($poss_date) { 
-																$date = DateTime::createFromFormat('d/m/Y', $poss_date);
-																$formatted_date = $date->format('jS F Y');?>
-            <span class="capsule">Possession Date: <?php echo $formatted_date;?></span>
+
+
+            <?php $rera_no = get_field('property_rera_no',$post->ID);
+				if($rera_no){ ?>
+            <span class="prop_rera">RERA No.: <?php echo $rera_no; ?></span>
             <?php } ?>
+
             <div class="details_box">
                 <?php 
-								if(have_rows('room_specification',$post->ID)) { 
-									while(have_rows('room_specification',$post->ID)) { 
-										the_row(); 
-									$capacity = get_sub_field('capacity');
-									$size = get_sub_field('size');
-									$price = get_sub_field('price');
-								?>
+				if(have_rows('room_specification',$post->ID)) { 
+					while(have_rows('room_specification',$post->ID)) { 
+						the_row(); 
+					$capacity = get_sub_field('capacity');
+					$size = get_sub_field('size');
+					$price = get_sub_field('price');
+				?>
                 <div class="details">
                     <span><?php echo $capacity;?></span><span><?php echo $size;?></span><span><?php echo $price;?></span>
                 </div>
@@ -737,9 +741,11 @@ if ( defined( 'JETPACK__VERSION' ) ) {
 
             </div>
             <p class="prop_dev"><?php echo get_field('property_contractor_name',$post->ID);?></p>
-            <?php $rera_no = get_field('property_rera_no',$post->ID);
-																							if($rera_no){ ?>
-            <span class="prop_rera">RERA No.: <?php echo $rera_no; ?></span>
+            <?php $poss_date = get_field('possession_date',$post->ID);
+				if($poss_date) { 
+					$date = DateTime::createFromFormat('d/m/Y', $poss_date);
+					$formatted_date = $date->format('jS F Y');?>
+            <span class="capsule">Possession Date: <?php echo $formatted_date;?></span>
             <?php } ?>
             <?php 
 						$property_map_value = get_field('main_location',$post->ID);
@@ -750,21 +756,19 @@ if ( defined( 'JETPACK__VERSION' ) ) {
                     href="<?php echo $property_map_address;?>"><?php echo $property_map_value;?></a>
             </p>
             <?php } ?>
-            <?php $poss_date = get_field('possession_date',$post->ID);
-						if($poss_date) { 
-							$date = DateTime::createFromFormat('d/m/Y', $poss_date);
-							$formatted_date = $date->format('jS F Y');?>
-            <span class="capsule">Possession Date: <?php echo $formatted_date;?></span>
+            <?php $rera_no = get_field('property_rera_no',$post->ID);
+				if($rera_no){ ?>
+            <span class="prop_rera">RERA No.: <?php echo $rera_no; ?></span>
             <?php } ?>
             <div class="details_box">
                 <?php 
-							if(have_rows('room_specification',$post->ID)) { 
-								while(have_rows('room_specification',$post->ID)) { 
-									the_row(); 
-								$capacity = get_sub_field('capacity');
-								$size = get_sub_field('size');
-								$price = get_sub_field('price');
-							?>
+					if(have_rows('room_specification',$post->ID)) { 
+						while(have_rows('room_specification',$post->ID)) { 
+							the_row(); 
+						$capacity = get_sub_field('capacity');
+						$size = get_sub_field('size');
+						$price = get_sub_field('price');
+					?>
                 <div class="details">
                     <span><?php echo $capacity;?></span><span><?php echo $size;?></span><span><?php echo $price;?></span>
                 </div>
@@ -972,3 +976,65 @@ add_action('wp_enqueue_scripts', 'custom_inline_script');
 		}
 	}
 	add_action('pre_get_posts', 'get_properties_by_view_count');
+
+
+
+/**
+* ##########################################################################
+*	Showing Location Options fields Name in Property Main Location Choice
+* ##########################################################################
+*/	
+	function populate_main_location_dropdown( $field ) {
+			$field['choices'] = [];
+		
+			if ( have_rows('locations', 'option') ) {
+				while ( have_rows('locations', 'option') ) {
+					the_row();
+					$location_name = get_sub_field('location_name');
+		
+					if ( $location_name ) {
+						$field['choices'][ $location_name ] = $location_name;
+					}
+				}
+			}
+			return $field;
+		}
+		add_filter('acf/load_field/name=main_location', 'populate_main_location_dropdown');
+	
+
+
+/**
+* #################################################################
+*			  Create Custom Post Type : Our Partners
+* #################################################################
+*/
+function create_partners_post_type() {
+	register_post_type( 'partners',
+		array(
+			'labels' => array(
+				'name' => 'Partners' ,
+				'singular_name' => 'Partners',
+				'add_new' => 'Add New',
+				'add_new_item' => 'Add New Partners',
+				'edit_item' => 'Edit Partners',
+				'new_item' => 'New Partners',
+				'view_item' => 'View Partners',
+				'search_items' => 'Search Partners',
+				'not_found' =>  'Nothing Found',
+				'not_found_in_trash' => 'Nothing found in the Trash',
+				'parent_item_colon' => ''
+			),
+			'public' => true,
+			'publicly_queryable' => true,
+			'show_ui' => true,
+			'query_var' => true,
+			'menu_icon'  => 'dashicons-universal-access',
+			'rewrite' => true,
+			'capability_type' => 'post',
+			'hierarchical' => false,
+			'menu_position' => null,
+			'supports' => array('title','editor','thumbnail')
+		)
+	);
+}
+add_action( 'init', 'create_partners_post_type' );

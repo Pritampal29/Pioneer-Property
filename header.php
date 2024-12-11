@@ -66,7 +66,7 @@
                                 alt="" /></a>
                     </div>
 
-                    <?php if(!is_front_page() && !is_tax('property-category') && !is_archive() && !is_singular('post') && !is_page( array( 'login', 'register', 'profile', 'account', 'members', 'user' ) )) { ?>
+                    <?php if(!is_front_page() && !is_tax('property-category') && !is_archive() && !is_singular('post') && !is_singular('partners') && !is_page( array( 'login', 'register', 'profile', 'account', 'members', 'user' ) )) { ?>
 
                     <form action="<?php echo site_url('/property/');?>" method="get" class="adv_search">
                         <div class="search-bar">

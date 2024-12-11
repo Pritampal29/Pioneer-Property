@@ -654,132 +654,17 @@ global $post;
                 <div class="col-lg-12">
                     <div class="section_title">
                         <h2 class="section_title__heading comm_heading">
-                            <?php echo get_field('location_heading',$post->ID);?></h2>
+                            <?php echo get_field('trending_heading',$post->ID);?></h2>
                         <p class="section_title__desc comm_sub_heading">
-                            <?php echo get_field('location_description',$post->ID);?></p>
+                            <?php echo get_field('trending_description',$post->ID);?></p>
                     </div>
                 </div>
             </div>
-
 
             <div class="location_box_wrap">
                 <div class="chrismas_light_tab">
                     <div class="text-center">
                         <?php
-                        $categories = get_categories(array(
-                            'taxonomy' => 'property-category', 
-                            'hide_empty' => false,
-                        )); ?>
-                        <ul class="nav nav-pills mb-2 mt-4 d-flex justify-content-center" id="pills-tab" role="tablist">
-                            <?php if (!empty($categories)) {
-                                $i = 1;
-                                foreach ($categories as $category) {
-                            ?>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link <?php echo ($i == 1) ? 'active' : ''; ?>"
-                                    id="pills-<?php echo $category->slug; ?>-tab" data-bs-toggle="pill"
-                                    data-bs-target="#pills-<?php echo $category->slug; ?>" type="button" role="tab"
-                                    aria-controls="pills-<?php echo $category->slug; ?>"
-                                    aria-selected="true"><?php echo $category->name; ?></button>
-                            </li>
-                            <?php $i++; } } ?>
-                        </ul>
-                    </div>
-
-                    <div class="tab-content" id="pills-tabContent">
-                        <?php
-                        if (!empty($categories)) {
-                            $i = 1;
-                            foreach ($categories as $category) {
-                        ?>
-                        <div class="tab-pane fade <?php echo ($i == 1) ? 'show active' : ''; ?>"
-                            id="pills-<?php echo $category->slug; ?>" role="tabpanel"
-                            aria-labelledby="pills-<?php echo $category->slug; ?>-tab">
-                            <div class="row">
-                                <?php
-                                $all_locations = [];
-
-                                $args = [
-                                    'post_type'      => 'property',
-                                    'posts_per_page' => -1,
-                                    'post_status'    => 'publish',
-                                    'tax_query'      => [
-                                        [
-                                            'taxonomy' => 'property-category',
-                                            'field'    => 'slug',
-                                            'terms'    => $category->slug,
-                                        ],
-                                    ],
-                                ];
-
-                                $property_query = new WP_Query($args);
-
-                                if ($property_query->have_posts()) {
-                                    while ($property_query->have_posts()) {
-                                        $property_query->the_post();
-
-                                        $locations = get_field('main_location');
-                                        if ($locations) {
-                                            $locations = is_array($locations) ? $locations : [$locations];
-
-                                            foreach ($locations as $location) {
-                                                if (!isset($all_locations[$location])) {
-                                                    $all_locations[$location] = 0;
-                                                }
-                                                $all_locations[$location]++;
-                                            }
-                                        }
-                                    }
-                                    wp_reset_postdata();
-                                }
-
-                                if (!empty($all_locations)) {
-                                    foreach ($all_locations as $location => $count) {
-                                        $location_image = '';
-                                        if (have_rows('locations', 'options')) {
-                                            while (have_rows('locations', 'options')) {
-                                                the_row();
-                                                $field_location_name = get_sub_field('location_name');
-                                                
-                                                if ($field_location_name == $location) {
-                                                    $location_image = get_sub_field('location_image');
-                                                }
-                                            }
-                                        }
-                                    ?>
-
-                                <div class="col-md-4">
-                                    <div class="property_card">
-                                        <div class="row align-items-center">
-                                            <div class="col-6">
-                                                <div class="img_box">
-                                                    <img src="<?php echo esc_url($location_image); ?>" alt="image">
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="cont_box">
-                                                    <h3><?php echo esc_html($location); ?></h3>
-                                                    <p><?php echo esc_html($count)?> Properties</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <?php }
-                                } ?>
-                            </div>
-                        </div>
-                        <?php $i++; } } ?>
-                    </div>
-                </div>
-            </div>
-
-
-
-            <!-- <div class="location_box_wrap">
-                <div class="chrismas_light_tab">
-                    <div class="text-center">
-                    <?php
                         $categories = get_categories(array(
                             'taxonomy' => 'property-category', 
                             'hide_empty' => false,
@@ -811,61 +696,60 @@ global $post;
                             aria-labelledby="pills-<?php echo $category->slug; ?>-tab">
                             <div class="row">
                                 <?php
-                                $all_locations = [];
+                                
+                                $query = new WP_Query(array(
+                                    'post_type' => 'property',
+                                    'posts_per_page' => -1,
+                                    'tax_query' => array(
+                                        array(
+                                            'taxonomy' => 'property-category',
+                                            'field' => 'term_id',
+                                            'terms' => $category->term_id,
+                                        ),
+                                    ),
+                                ));
+                                        // echo "<pre>"; print_r($query);
+                                if ($query->have_posts()) {
+                                    while ($query->have_posts()) {
+                                        $query->the_post();
 
-                                $args = [
-                                    'post_type'      => 'property',
-                                    'posts_per_page' => -1, 
-                                    'post_status'    => 'publish',
-                                ];
-
-                                $property_query = new WP_Query($args);
-
-                                if ($property_query->have_posts()) {
-                                    while ($property_query->have_posts()) {
-                                        $property_query->the_post();
-
-                                        $locations = get_field('main_location');
-                                        if ($locations) {
-                                            $locations = is_array($locations) ? $locations : [$locations];
-
-                                            $all_locations = array_merge($all_locations, $locations);
-                                        }
-                                    }
-                                    wp_reset_postdata(); 
-                                }
-
-                                $unique_locations = array_unique($all_locations);
-
-                                if (!empty($unique_locations)) {
-                                    foreach ($unique_locations as $location) {
-                                        echo '<div class="col-md-4">
-                                                <div class="property_card">
-                                                    <div class="row align-items-center">
-                                                        <div class="col-md-6">
-                                                            <div class="img_box">
-                                                                <img src="http://192.168.1.254/project/2023/part2/pioneer_property/wp-content/uploads/2024/07/prop_1.png"
-                                                                    alt="">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="cont_box">
-                                                                <h3>' . esc_html($location) . '</h3>
-                                                                <p> 10 Properties</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                        $main_location = get_field('main_location');
+                                ?>
+                                <div class="col-md-4">
+                                    <div class="property_card">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-6">
+                                                <div class="img_box">
+                                                    <img src="http://192.168.1.254/project/2023/part2/pioneer_property/wp-content/uploads/2024/07/prop_1.png"
+                                                        alt="">
                                                 </div>
-                                            </div>';
-                                    } 
-                                } ?>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="cont_box">
+                                                    <h3><?php echo $main_location;?></h3>
+                                                    <p> 10 Properties</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <?php }
+                                    wp_reset_postdata();
+                                ?>
                             </div>
                         </div>
-                        <?php $i++; } } ?>
+                        <?php $i++; } } } ?>
                     </div>
                 </div>
 
-            </div> -->
+            </div>
+
+
+
+
+
+
 
 
 
@@ -873,18 +757,30 @@ global $post;
     </section>
     <!-- Location Section end -->
 
+
     <!-- Blog section start -->
     <section class="blog" data-aos="fade-up" data-aos-duration="1200">
+
         <div class="container">
+
             <div class="row">
+
                 <div class="col-lg-12">
+
                     <div class="section_title">
+
                         <h2 class="section_title__heading comm_heading">
+
                             <?php echo get_field('blog_heading',$post->ID);?></h2>
+
                     </div>
+
                 </div>
+
             </div>
+
             <div class="row">
+
                 <div class="col-md-12">
 
                     <div class="slider_sec">
@@ -1056,6 +952,8 @@ global $post;
     </section>
     <!-- Blog section end -->
 
+
+
     <!-- Testimonial section end -->
     <section class="testimonial"
         style="background-image: url(<?php echo get_field('testimonial_bg_image',$post->ID);?>)" data-aos="fade-up"
@@ -1201,6 +1099,8 @@ global $post;
 
     </section>
     <!-- Testimonial section end -->
+
+
 
     <!-- Contact section end -->
     <section class="contact contact_home" data-aos="fade-up" data-aos-duration="1200">
@@ -1351,119 +1251,57 @@ global $post;
     </section>
     <!-- Contact section end -->
 
-    <!-- Partner Developers section start -->
-    <section class="partner_developer blog partner_dev" data-aos="fade-up" data-aos-duration="1200">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="section_title">
-                        <h2 class="section_title__heading comm_heading">
-                            <?php echo get_field('developer_heading',$post->ID);?></h2>
-                        <p class="section_title__desc comm_sub_heading">
-                            <?php echo get_field('developer_description',$post->ID);?>
-
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="slider_sec">
-                        <button class="prev_blog blog_left">
-                            <i class="fa-solid fa-chevron-left"></i>
-                        </button>
-                        <button class="next_blog blog_right">
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </button>
-                        <div class="swiper-container blog_slider">
-                            <div class="swiper-wrapper">
-                                <?php
-                                $args = array(
-                                    'post_type' => 'partners',
-                                    'post_status' => 'publish',
-                                    'posts_per_page' => -1,
-                                    'orderby' => 'date',
-                                    'order' => 'DESC',
-                                );
-                                $partner_post = new WP_Query($args);
-
-                                if ($partner_post->have_posts()) {
-                                    while ($partner_post->have_posts()) {
-                                        $partner_post->the_post(); 
-                                ?>
-                                <div class="swiper-slide">
-                                    <a href="<?php the_permalink();?>">
-                                        <div class="property_card">
-                                            <div class="img_box">
-                                                <?php $featured_image = wp_get_attachment_url( get_post_thumbnail_id($post->ID) ); ?>
-                                                <img src="<?php echo $featured_image;?>" alt="" />
-                                            </div>
-                                            <div class="cont_box">
-                                                <h3><?php the_title();?></h3>
-                                                <p> <?php echo wp_trim_words( get_the_content(), 15, '...');?></p>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <?php } } 
-                                    wp_reset_postdata();?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Partner Developers section end -->
 
 
     <!-- Partner section start -->
     <section class="partner" data-aos="fade-up" data-aos-duration="1200">
+
         <div class="container">
+
             <div class="row">
+
                 <div class="col-lg-12">
+
                     <div class="section_title">
+
                         <h2 class="section_title__heading comm_heading mb-0">
+
                             <?php echo get_field('associated_heading',$post->ID);?></h2>
+
                     </div>
+
                 </div>
+
             </div>
+
             <div class="d-flex justify-content-between align-items-center flex-wrap">
+
+
+
                 <?php 
+
                 if (have_rows('associated_partners',$post->ID)) {
+
                     while (have_rows('associated_partners',$post->ID)) {
+
                         the_row(); ?>
+
                 <div class="partner_card">
+
                     <img src="<?php echo get_sub_field('partners_logo');?>" alt="" />
+
                 </div>
+
                 <?php } } ?>
+
+
+
             </div>
+
         </div>
+
     </section>
     <!-- Partner section end -->
-
-
-    <!-- Great Place to Work section start -->
-    <section class="grtplce_towork" data-aos="fade-up" data-aos-duration="1200"
-        style="background-image: url(<?php echo get_field('great_place_images',$post->ID);?>)">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <div class="grtplce_towork_txt">
-                        <h2><?php echo get_field('great_place_to_worl_text',$post->ID);?></h2>
-                    </div>
-                </div>
-                <div class="col-md-4 text-end">
-                    <div class="grtplce_towork_img">
-                        <span><img src="<?php echo get_field('great_place_logo',$post->ID);?>" alt=""></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Great Place to Work section end -->
-
 
 </main>
 

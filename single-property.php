@@ -21,12 +21,14 @@ global $post;
                     <div class="contact_opener d-lg-none d-block">
                         <button id="ctf_open" class="smooth-blink"><i class="fa-solid fa-headset "></i></button>
                     </div>
-                    <div class="details_slider">
+
+                    <!-- Old Slider with Image Only Start -->
+                    <!-- <div class="details_slider">
                         <div class="swiper mySwiper2">
                             <div class="swiper-wrapper">
                                 <?php $banimages = get_field('main_image_gallery',$post->ID);
-                                if( $banimages ){ 
-                                    foreach( $banimages as $image ){ ?>
+                                    if( $banimages ){ 
+                                        foreach( $banimages as $image ){ ?>
                                 <div class="swiper-slide">
                                     <img src="<?php echo $image;?>" />
                                 </div>
@@ -38,15 +40,73 @@ global $post;
                         <div thumbsSlider="" class="swiper mySwiper">
                             <div class="swiper-wrapper">
                                 <?php $galimages = get_field('main_image_gallery',$post->ID);
-                                if( $galimages ){ 
-                                    foreach( $galimages as $glry_image ){ ?>
+                                    if( $galimages ){ 
+                                        foreach( $galimages as $glry_image ){ ?>
                                 <div class="swiper-slide">
                                     <img src="<?php echo $glry_image;?>" />
                                 </div>
                                 <?php } } ?>
                             </div>
                         </div>
+                    </div> -->
+                    <!-- Old Slider with Image Only End -->
+
+                    <!-- New Slider with Image+Video Start -->
+                    <div class="details_slider">
+                        <div class="swiper mySwiper2">
+                            <div class="swiper-wrapper">
+                                <?php 
+                                $banimages = get_field('main_image_gallery', $post->ID);
+                                if ($banimages) { 
+                                    foreach ($banimages as $file) { 
+                                        $file_extension = pathinfo($file, PATHINFO_EXTENSION);
+
+                                        if (in_array(strtolower($file_extension), ['jpg', 'jpeg', 'png', 'gif', 'webp'])) { ?>
+                                <div class="swiper-slide">
+                                    <img src="<?php echo esc_url($file); ?>" alt="Gallery Image">
+                                </div>
+                                <?php } elseif (in_array(strtolower($file_extension), ['mp4', 'webm', 'ogg'])) { ?>
+                                <div class="swiper-slide">
+                                    <video width="100%" autoplay muted class="video-slide">
+                                        <source src="<?php echo esc_url($file); ?>"
+                                            type="video/<?php echo esc_attr($file_extension); ?>">
+                                    </video>
+                                </div>
+                                <?php } 
+                                    } 
+                                } ?>
+                            </div>
+                            <div class="swiper-button-next sl_btn"></div>
+                            <div class="swiper-button-prev sl_btn"></div>
+                        </div>
+
+                        <div thumbsSlider="" class="swiper mySwiper">
+                            <div class="swiper-wrapper">
+                                <?php 
+                                $galimages = get_field('main_image_gallery', $post->ID);
+                                if ($galimages) { 
+                                    foreach ($galimages as $file) { 
+                                        $file_extension = pathinfo($file, PATHINFO_EXTENSION);
+
+                                        if (in_array(strtolower($file_extension), ['jpg', 'jpeg', 'png', 'gif', 'webp'])) { ?>
+                                <div class="swiper-slide">
+                                    <img src="<?php echo esc_url($file); ?>" alt="Thumbnail Image">
+                                </div>
+                                <?php } elseif (in_array(strtolower($file_extension), ['mp4', 'webm', 'ogg'])) { ?>
+                                <div class="swiper-slide">
+                                    <video width="100%" height="100%" autoplay muted loop style="object-fit:cover">
+                                        <source src="<?php echo esc_url($file); ?>"
+                                            type="video/<?php echo esc_attr($file_extension); ?>">
+                                    </video>
+                                </div>
+                                <?php } 
+                                    } 
+                                } ?>
+                            </div>
+                        </div>
                     </div>
+                    <!-- New Slider with Image+Video Start -->
+
 
                     <div class="top_section d-flex justify-content-between align-items-start">
                         <?php
@@ -69,7 +129,7 @@ global $post;
                         </div>
                     </div>
                     <div class="property-details" id="property_details">
-                        <div class="details">
+                        <div class="details mb-0">
 
                             <div class="details_inner" id="details_inner">
                                 <h5><?php the_title();?></h5>
@@ -108,8 +168,9 @@ global $post;
 
                                 <!---------- Overview Section ---------->
                                 <div class="overview" id="overview">
-                                    <div class="pdb feature details_sec">
-                                        <h6 class="top"><?php echo get_field('overview_heading',$post->ID);?></h6>
+                                    <div class="pdb  feature details_sec">
+                                        <h6 class="top"><?php echo get_field('overview_heading',$post->ID);?>
+                                        </h6>
                                         <div class="area-in">
                                             <div class="row">
                                                 <div class="col-md-6 mb-3">
@@ -121,9 +182,11 @@ global $post;
                                                         $date = DateTime::createFromFormat('d/m/Y', $comp_date);
                                                         $formatted_date = $date->format('F Y');?>
                                                         <ul>
-                                                            <li>Land Area : <span><?php echo $land; ?></span></li>
+                                                            <li>Land Area : <span><?php echo $land; ?></span>
+                                                            </li>
                                                             <li>Completion
-                                                                Date:<span><?php echo $formatted_date; ?></span></li>
+                                                                Date:<span><?php echo $formatted_date; ?></span>
+                                                            </li>
                                                         </ul>
                                                         <?php } ?>
                                                     </div>
@@ -135,9 +198,12 @@ global $post;
                                                         $open_space = get_field('open_space',$post->ID);
                                                         if($no_of_tower && $open_space) { ?>
                                                         <ul>
-                                                            <li>No. of Tower : <span><?php echo $no_of_tower;?></span>
+                                                            <li>No. of Tower :
+                                                                <span><?php echo $no_of_tower;?></span>
                                                             </li>
-                                                            <li>Open Space : <span><?php echo $open_space;?></span></li>
+                                                            <li>Open Space :
+                                                                <span><?php echo $open_space;?></span>
+                                                            </li>
                                                         </ul>
                                                         <?php } ?>
                                                     </div>
@@ -203,7 +269,8 @@ global $post;
                                 <!---------- Location Section ---------->
                                 <div class="location" id="plocation">
                                     <div class="pdb feature location_sec">
-                                        <h6 class="top"><?php echo get_field('location_heading',$post->ID);?></h6>
+                                        <h6 class="top"><?php echo get_field('location_heading',$post->ID);?>
+                                        </h6>
                                         <div class="area-container">
                                             <div class="row">
                                                 <div class="col-md-12">
@@ -257,7 +324,8 @@ global $post;
                                                                 src="<?php echo get_sub_field('images');?>" />
                                                         </div>
                                                         <div class="bx-txt">
-                                                            <h4><?php echo get_sub_field('aminities_name');?></h4>
+                                                            <h4><?php echo get_sub_field('aminities_name');?>
+                                                            </h4>
                                                         </div>
                                                     </div>
                                                     <?php } } ?>
@@ -269,7 +337,8 @@ global $post;
 
                                 <!---------- Specification Section ---------->
                                 <div class="specification pdb feature" id="specification">
-                                    <h6 class="top"><?php echo get_field('specification_heading',$post->ID);?></h6>
+                                    <h6 class="top"><?php echo get_field('specification_heading',$post->ID);?>
+                                    </h6>
                                     <div class="red-ftr">
                                         <div class="am-decp-flx">
                                             <div class="row">
@@ -299,7 +368,8 @@ global $post;
 
                                 <!---------- Floor-Plan Section ---------->
                                 <div class="pdb feature" id="floor_Plans">
-                                    <h6 class="top"><?php echo get_field('floor_plan_heading', $post->ID); ?></h6>
+                                    <h6 class="top"><?php echo get_field('floor_plan_heading', $post->ID); ?>
+                                    </h6>
                                     <?php if (have_rows('floor_plans_repeater', $post->ID)) { ?>
                                     <div class="section floor-plans">
                                         <nav class="mb-4">
@@ -342,7 +412,8 @@ global $post;
                                                             </a>
                                                             <?php if (!is_user_logged_in()) { ?>
                                                             <a class="login_btn"
-                                                                href="<?php echo site_url('/login/'); ?>">login to view
+                                                                href="<?php echo site_url('/login/'); ?>">login
+                                                                to view
                                                                 <i
                                                                     class="fa-solid fa-arrow-up-right-from-square"></i></a>
                                                             <?php } ?>
@@ -396,7 +467,7 @@ global $post;
                                 </div>
 
                                 <!---------- Gallery Section ---------->
-                                <div class="pdb feature" id="gallery_sec">
+                                <div class="pdb  feature" id="gallery_sec">
                                     <h6 class="top"><?php echo get_field('gallery_heading',$post->ID);?></h6>
 
                                     <ul class="nav nav-pills custom-pills mb-3" id="pills-tab" role="tablist">
@@ -500,10 +571,11 @@ global $post;
 
                 <div class="col-lg-3" id="contact_col">
                     <div class="side_bar" id="side_bar">
+                        <span class="d-lg-none" id="close_form"><i class="fa-solid fa-xmark"></i></span>
                         <div class="card">
 
                             <div class="contact_form">
-                                <h3>Are you interested to buy <br><strong><?php the_title();?></strong> ?</h3>
+                                <h3><strong>Are you interested to buy <br><?php the_title();?> ?</strong></h3>
                                 <?php echo do_shortcode( '[contact-form-7 id="b67b284" title="Details Page Enq Form"]' );?>
                             </div>
 
@@ -516,7 +588,8 @@ global $post;
                                 <div class="spl-txt-wrap va-middle">
                                     <div class="spl-title va-top">Assured Callback in 5 mins</div>
                                     <ul class="va-top reset-ul offer-ul">
-                                        <li class="offer">Get an assured callback in 5 mins from sales expert (9 AM - 6
+                                        <li class="offer">Get an assured callback in 5 mins from sales expert (9
+                                            AM - 6
                                             PM
                                             IST)</li>
                                     </ul>
@@ -525,7 +598,8 @@ global $post;
                             <!-- Below Form Section -->
 
 
-                            <button class="in_btn w-100 mt-4" data-bs-toggle="modal" data-bs-target="#emiModal">
+                            <a class="in_btn w-100 mt-1" style="height:35px"
+                                href="<?php echo site_url( '/get-offer/');?>">
                                 Get Offer
                                 <span class="button__icon-wrapper">
                                     <svg width="10" class="button__icon-svg" xmlns="http://www.w3.org/2000/svg"
@@ -542,7 +616,7 @@ global $post;
                                         </path>
                                     </svg>
                                 </span>
-                            </button>
+                            </a>
                         </div>
 
                         <?php if(get_field('offer_details',$post->ID)) { ?>
@@ -573,13 +647,13 @@ global $post;
             <div class="row">
                 <div class="col-md-12">
                     <div class="slider_sec">
-                        <button class="prev_trend">
+                        <button class="prev_trend new_launch_left">
                             <i class="fa-solid fa-chevron-left"></i>
                         </button>
-                        <button class="next_trend">
+                        <button class="next_trend new_launch_right">
                             <i class="fa-solid fa-chevron-right"></i>
                         </button>
-                        <div class="swiper-container trend_slider">
+                        <div class="swiper-container trend_slider launches_nw_slider">
                             <div class="swiper-wrapper">
                                 <?php
                                 $current_location = get_field('main_location'); 
@@ -743,7 +817,8 @@ global $post;
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Book Visit</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i
+                            class="fa-regular fa-circle-xmark"></i></button>
                 </div>
                 <div class="modal-body">
                     <div class="enquiry-form">
@@ -760,7 +835,8 @@ global $post;
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Download Brochure</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i
+                            class="fa-regular fa-circle-xmark"></i></button>
                 </div>
                 <div class="modal-body">
                     <div class="enquiry-form">
