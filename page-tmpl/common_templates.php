@@ -68,7 +68,7 @@ get_header();
 
 
 
-    <section class="foot_comm_pg py-5">
+    <section class="foot_comm_pg py-4">
 
         <div class="container">
 

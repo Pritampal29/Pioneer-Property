@@ -31,10 +31,6 @@
     height: 415px;
 
   }
-  .advname_search{
-    margin-left: 42%;
-  }
-  
 
 }
 
@@ -54,9 +50,6 @@
 
     left: 50px;
 
-  }
-  .advname_search{
-    margin-left: 30%;
   }
 
 }
@@ -129,10 +122,6 @@
   }
   .ft_categori .col-md-3{
     width: 25%;
-  }
-  /*====== tanmoy 04-02-2025 =========*/
-  .filter_li_home .slider_box{
-    width: 637px;
   }
 
 }
@@ -824,11 +813,6 @@
   .ft_categori .col-md-3{
     width: 50%;
   }
-  /*====== tanmoy 04-02-2025 =========*/
-  .filter_li_home .slider_box{
-    width: 533px;
-  }
-   
 
 }
 
@@ -935,28 +919,6 @@
     margin-bottom: 20px;
 
   }
-  /* tanmoy 04-02-2025 */
-  .advname_search {
-    margin-left: 0;
-}
-/* tanmoy 05-02-2025 */
-.section-top_footer .row .col-md-3{
-  width: 50%;
-  padding: 2px;
-}
-.section-top_footer .section_title__heading{
-  margin-bottom: 3px;
-  font-size: 12px;
-}
-.section-top_footer{
-  padding-block: 10px;
-}
-.form_style input{
-  padding: 3px !important;
-}
-.section-top_footer .row{
-  margin: 0 -22px;
-}
 
 }
 
@@ -1002,7 +964,7 @@
 
   .property_card .img_box .location span {
 
-    font-size: 12px;
+    font-size: 15px;
 
   }
 
@@ -1624,7 +1586,11 @@
 
 
 
-  
+  .header-wrap .search-bar {
+
+    display: none;
+
+  }
 
 
 
@@ -1920,7 +1886,7 @@
     top: auto;
     bottom: 20px;
     left: 50%;
-    /* transform: translateX(-50%); */
+    transform: translateX(-50%);
   }
   .show_new_btn{
     padding-bottom: 40px;
@@ -1934,49 +1900,6 @@
   .poperty.trending .slider_sec .prev_trend i {
     transform: rotate(180deg);
   }
-  .page-id-278 .foot_comm_pg {
-    padding: 0 !important;
-  }
-  /*====== tanmoy 04-02-2025 =========*/
-  .advname_search .search-bar {
-    width: 150px !important;
-  }
-  #header .common_wrapper{
-    padding: 0;
-  }
-  .searchIcn {
-    margin-right: 0 !important;
-  }
-  .header-logo a img {
-    width: 90px;
-  }
-  .header-wrap .search-bar input[type=text] {
-    flex-grow: 1;
-    min-width: 130px;
-    height: 32px;
-  }
-  .new_card .details .project-name {
-    font-size: 12px;
-    
-}
-.new_card .details .location {
-  font-size: 12px;
-
-}
-.new_card .details .price {
-  font-size: 12px;
-}
-.new_card .details .possession {
-  font-size: 12px;
-}
-.feature .tab-content .img_box .login_btn {
-  opacity: 1;
-  visibility: visible;
-}
-.feature .tab-content .img_box::after {
-  opacity: 1;
-  visibility: visible;
-}
 
 }
 
@@ -1989,7 +1912,6 @@
     font-size: 23px;
 
   }
- 
 
 }
 

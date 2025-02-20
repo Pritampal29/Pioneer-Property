@@ -78,7 +78,7 @@ get_header();
                                         <label for="interest-rate"> Interest Rate </label>
                                         <div class="right">
                                             <p>%</p>
-                                            <input type="text" value="7" id="interest-rate-value" min="0" max="20" step="0.01">
+                                            <input type="text" id="interest-rate-value" value="" />
                                         </div>
                                     </div>
                                     <input type="range" id="interest-rate" min="1" max="20" step="0.01" value="7" />
@@ -109,108 +109,7 @@ get_header();
         <!-- emi section end -->
     </section>
 
-    <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const loanAmountSlider = document.getElementById("loan-amount");
-        const loanTenureSlider = document.getElementById("loan-term");
-        const interestRateSlider = document.getElementById("interest-rate");
 
-        const loanAmountValue = document.getElementById("loan-amount-value");
-        const loanTenureValue = document.getElementById("loan-term-value");
-        const interestRateValue = document.getElementById("interest-rate-value");
-
-        const emiAmount = document.getElementById("emi");
-        const totalInterest = document.getElementById("total-interest");
-        const totalPayment = document.getElementById("total-amount");
-
-        const tenureYearsRadio = document.getElementById("tenure-years");
-        const tenureMonthsRadio = document.getElementById("tenure-months");
-
-        let isYears = true;
-
-        function calculateEMI() {
-            const principal = parseFloat(loanAmountSlider.value);
-            const tenure = isYears
-                ? parseFloat(loanTenureSlider.value) * 12
-                : parseFloat(loanTenureSlider.value);
-            const rate = parseFloat(interestRateSlider.value) / 12 / 100;
-
-            const emi = (principal * rate * Math.pow(1 + rate, tenure)) / (Math.pow(1 + rate, tenure) - 1);
-            const totalPaymentAmount = emi * tenure;
-            const totalInterestAmount = totalPaymentAmount - principal;
-
-            emiAmount.textContent = emi.toFixed(2);
-            totalInterest.textContent = totalInterestAmount.toFixed(2);
-            totalPayment.textContent = totalPaymentAmount.toFixed(2);
-        }
-
-        function updateValues() {
-            loanAmountSlider.value = loanAmountValue.value;
-            loanTenureSlider.value = loanTenureValue.value;
-            interestRateSlider.value = interestRateValue.value;
-            calculateEMI();
-        }
-
-        loanAmountSlider.addEventListener("input", function () {
-            loanAmountValue.value = loanAmountSlider.value;
-            updateValues();
-        });
-
-        loanTenureSlider.addEventListener("input", function () {
-            loanTenureValue.value = loanTenureSlider.value;
-            updateValues();
-        });
-
-        interestRateSlider.addEventListener("input", function () {
-            interestRateValue.value = interestRateSlider.value;
-            updateValues();
-        });
-
-        loanAmountValue.addEventListener("input", function () {
-            loanAmountSlider.value = loanAmountValue.value;
-            updateValues();
-        });
-
-        loanTenureValue.addEventListener("input", function () {
-            loanTenureSlider.value = loanTenureValue.value;
-            updateValues();
-        });
-
-        interestRateValue.addEventListener("input", function () {
-            interestRateSlider.value = interestRateValue.value;
-            updateValues();
-        });
-
-        tenureYearsRadio.addEventListener("change", function () {
-            isYears = true;
-            loanTenureSlider.max = 30;
-
-            if (parseFloat(loanTenureSlider.value) > 30) {
-                loanTenureSlider.value = 10;
-            }
-
-            updateValues();
-        });
-
-        tenureMonthsRadio.addEventListener("change", function () {
-            isYears = false;
-            loanTenureSlider.max = 360;
-            loanTenureSlider.value = parseFloat(loanTenureSlider.value) * 12;
-            updateValues();
-        });
-        updateValues();
-    });
-
-    document.getElementById('interest-rate-value').addEventListener('input', function() {
-    let value = parseFloat(this.value);
-    if (value > 20) {
-        this.value = 20; 
-    } else if (value < 0) {
-        this.value = 0; 
-    }
-});
-
-</script>
 
 </main>
 

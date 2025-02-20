@@ -70,8 +70,7 @@ body {
 
   --bs-gutter-x: 1.5rem;
 
-  /* max-width: 1280px; */
-  max-width: 100%;
+  max-width: 1280px;
 
   width: 100%;
 
@@ -617,7 +616,7 @@ textarea:-ms-input-placeholder {
 
   font-size: 18px;
 
-  text-transform: math-auto;
+  text-transform: uppercase;
 
   color: #ffffff;
 

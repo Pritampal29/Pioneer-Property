@@ -33,11 +33,9 @@ global $post;
                             <div class="banner-content">
                                 <h1>Kolkata</h1>
                                 <div class="actions text-center justify-content-center">
-                                    <ul>
+                                    <!-- <ul>
                                         <li class="mx-0"><a href="#">Enquire for home loan</a></li>
-                                        <!-- <li></li> -->
-                                        <!-- <li><a href="#">get offer</a></li> -->
-                                    </ul>
+                                    </ul> -->
                                 </div>
                             </div>
                             <ul class="action_links">
@@ -96,9 +94,9 @@ global $post;
                                 <div class="slider_box">
                                     <div class="form-group">
                                         <label for="loan-amount">Amount (INR): <span
-                                                id="loan-amount-value">10000000</span></label>
+                                                id="loan-amount-value">1Cr</span></label>
                                         <input type="range" id="loan-amount" name="min_budget" min="1000000"
-                                            max="100000000" step="1000000" value="100000000" />
+                                            max="100000000" step="500000" value="100000000" />
                                         <input type="hidden" id="min-budget" name="min_budget" value="100000" />
                                     </div>
                                 </div>
@@ -198,7 +196,7 @@ global $post;
                             <div class="more_filter_card">
                                 <div class="row">
                                     <!-- Project Status -->
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <h5>Project Status</h5>
                                         <?php
                                             $args = array(
@@ -232,7 +230,7 @@ global $post;
                                     </div>
 
                                     <!-- Property Type -->
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <h5>Property Type</h5>
                                         <?php
                                             $args = array(
@@ -268,7 +266,7 @@ global $post;
                                         if ($field) {
                                             $choices = $field['choices'];
                                             ?>
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <h5>Bedrooms</h5>
                                         <?php foreach ($choices as $value => $label): ?>
                                         <div class="form-check">
@@ -287,31 +285,6 @@ global $post;
                                     }
                                     wp_reset_postdata();
                                     ?>
-
-                                    <!-- Area (sqft) -->
-                                    <div class="col-md-3">
-                                        <h5>Area (sqft)</h5>
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <div class="mb-3">
-                                                    <label for="min-area" class="form-label min">Minimum</label>
-                                                    <ul>
-                                                        <li>250 sq ft</li>
-                                                        <li>250 sq ft</li>
-                                                        <li>500 sq ft</li>
-                                                        <li>1000 sq ft</li>
-                                                        <li>1500 sq ft</li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="mb-3">
-                                                    <label for="max-area" class="form-label min">Maximum</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Area (sqft) -->
                                 </div>
                             </div>
                             <button id="advSearchBtn" type="button" class="listing_search_btn">
@@ -342,10 +315,12 @@ global $post;
 
             <?php 
 
-            if (isset($_GET['location']) && isset($_GET['category']) && isset($_GET['prop_name'])) { 
+            if (isset($_GET['location']) && isset($_GET['category']) && isset($_GET['max_budget']) && isset($_GET['roomCat'])) { 
                 $prop_location = sanitize_text_field($_GET['location']);
                 $prop_category = sanitize_text_field($_GET['category']);
-                $prop_name = sanitize_text_field($_GET['prop_name']);
+                // $prop_name = sanitize_text_field($_GET['prop_name']);
+                $room_bhk = sanitize_text_field($_GET['roomCat']);
+    	        $max_budget = sanitize_text_field($_GET['max_budget']);
                 ?>
 
             <div class="row">
@@ -357,6 +332,15 @@ global $post;
                         'order' => 'DESC',
                     );
 
+                    if (!empty($max_budget)) {
+                        $args['meta_query'][] = array(
+                            'key' => 'property_price_max_price',
+                            'value' => $max_budget,
+                            'compare' => '<=',
+                            'type' => 'NUMERIC',
+                        );
+                    }
+
                     if (!empty($prop_location)) {
                         $args['meta_query'][] = array(
                             'key' => 'main_location',
@@ -365,9 +349,18 @@ global $post;
                         );
                     }
 
-                    if (!empty($prop_name)) {
-                        $args['s'] = $prop_name;
+                    if (!empty($room_bhk)) {
+                        $args['meta_query'][] = array(
+                            'key' => 'room_capacity',
+                            'value' => '"' . $room_bhk . '"',
+                            'compare' => 'LIKE',
+                        );
                     }
+             
+
+                    // if (!empty($prop_name)) {
+                    //     $args['s'] = $prop_name;
+                    // }
 
                     if (!empty($prop_category)) {
                         $args['tax_query'][] = array(
@@ -428,18 +421,19 @@ global $post;
                                             $max_price_formatted = number_format($max_price / 1000, 2) . ' K';
                                         }
                                         ?>
-                                        <span class="prop_price">
-                                            ₹ <?php if($min_price_formatted) { echo $min_price_formatted; } ?> -
-                                            <?php if($max_price_formatted) { echo $max_price_formatted; } ?>
-                                        </span>
+                                <span class="prop_price">
+                                    ₹ <?php if($min_price_formatted) { echo $min_price_formatted; } ?> -
+                                    <?php if($max_price_formatted) { echo $max_price_formatted; } ?>
+                                </span>
                                 <?php } ?>
                             </div>
                             <p class="prop_dev"><?php echo get_field('property_contractor_name',$post->ID);?></p>
                             <?php $poss_date = get_field('possession_date',$post->ID);
                             if($poss_date) { 
-                                $date = DateTime::createFromFormat('d/m/Y', $poss_date);
-                                $formatted_date = $date->format('jS F Y');?>
-                            <span class="capsule">Possession Date: <?php echo $formatted_date;?></span>
+                                // $date = DateTime::createFromFormat('d/m/Y', $poss_date);
+                                // $formatted_date = $date->format('jS F Y');
+                                ?>
+                            <span class="capsule">Possession Date: <?php echo $poss_date;?></span>
                             <?php } ?>
                             <?php 
                             $property_map_value = get_field('main_location',$post->ID);
@@ -471,12 +465,12 @@ global $post;
                                 <?php } } ?>
                             </div>
                             <div class="button_box d-flex">
-                                <a href="<?php the_permalink();?>" class="in_btn in_btn_2">view details</a>
+                                <a href="<?php the_permalink();?>" class="in_btn in_btn_2">View Details</a>
                                 <button id="download-brochure" class="in_btn w-auto" data-bs-toggle="modal"
                                     data-bs-target="#dnldModal">
                                     Download Brochure
                                 </button>
-                                <a href="#" class="in_btn"><i class="fa-solid fa-phone"></i>get call back</a>
+                                <a href="<?php echo get_permalink() . '#side_bar'; ?>" class="in_btn"><i class="fa-solid fa-phone"></i>Get Call Back</a>
                             </div>
                         </div>
                     </div>
@@ -506,7 +500,7 @@ global $post;
                         $Property->the_post(); ?>
                 <div class="col-md-6 mb-4" id="propertyList">
                     <div class="listing_card">
-                        
+
                         <!-- Property Image start -->
                         <div class="img_box">
                             <?php $featured_image = wp_get_attachment_url( get_post_thumbnail_id($post->ID) ); ?>
@@ -562,10 +556,10 @@ global $post;
                             <!-- Possession Date start -->
                             <?php $poss_date = get_field_object('possession_date',$post->ID);
                             if($poss_date) { 
-                                $date = DateTime::createFromFormat('d/m/Y', $poss_date['value']);
-                                $formatted_date = $date->format('jS F Y');?>
+                                // $date = DateTime::createFromFormat('d/m/Y', $poss_date['value']);
+                                // $formatted_date = $date->format('jS F Y');?>
                             <span class="capsule"><?php echo $poss_date['label'];?>:
-                                <?php echo $formatted_date;?></span>
+                                <?php echo $poss_date['value'];?></span>
                             <?php } ?>
                             <!-- Possession Date end -->
 
@@ -611,12 +605,12 @@ global $post;
 
                             <!-- Below Buttons start -->
                             <div class="button_box d-flex">
-                                <a href="<?php the_permalink();?>" class="in_btn in_btn_2">view details</a>
+                                <a href="<?php the_permalink();?>" class="in_btn in_btn_2">View Details</a>
                                 <button id="download-brochure" class="in_btn w-auto" data-bs-toggle="modal"
                                     data-bs-target="#dnldModal">
                                     Download Brochure
                                 </button>
-                                <a href="#" class="in_btn"><i class="fa-solid fa-phone"></i>get call back</a>
+                                <a href="<?php echo get_permalink() . '#side_bar'; ?>" class="in_btn"><i class="fa-solid fa-phone"></i>Get Call Back</a>
                             </div>
                             <!-- Below Buttons end -->
                         </div>
@@ -735,11 +729,25 @@ global $post;
 
 
 <script>
+function formatAmount(value) {
+    if (value >= 10000000) {
+        return (value / 10000000).toFixed(2) + 'Cr';
+    } else if (value >= 100000) {
+        return (value / 100000).toFixed(2) + 'L';
+    }
+    return value;
+}
+
 document.getElementById('loan-amount').addEventListener('input', function() {
     var value = this.value;
-    document.getElementById('loan-amount-value').textContent = value;
+    document.getElementById('loan-amount-value').textContent = formatAmount(value);
 });
+// document.getElementById('loan-amount').addEventListener('input', function() {
+//     var value = this.value;
+//     document.getElementById('loan-amount-value').textContent = value;
+// });
 </script>
+
 
 <?php
 get_footer(); ?>
