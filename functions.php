@@ -195,6 +195,7 @@ if ( defined( 'JETPACK__VERSION' ) ) {
  *
  */
 
+ include get_template_directory() . "/DataFilter/data-filter.php";
 
 /**
 * #################################################################
@@ -581,9 +582,9 @@ if ( defined( 'JETPACK__VERSION' ) ) {
             <p class="prop_dev"><?php echo get_field('property_contractor_name',$post->ID);?></p>
             <?php $poss_date = get_field('possession_date',$post->ID);
 				if($poss_date) { 
-					$date = DateTime::createFromFormat('d/m/Y', $poss_date);
-					$formatted_date = $date->format('jS F Y');?>
-            <span class="capsule">Possession Date: <?php echo $formatted_date;?></span>
+					// $date = DateTime::createFromFormat('d/m/Y', $poss_date);
+					// $formatted_date = $date->format('jS F Y');?>
+            <span class="capsule">Possession Date: <?php echo $poss_date;?></span>
             <?php } ?>
             <?php 
 				$property_map_value = get_field('main_location',$post->ID);
@@ -616,11 +617,12 @@ if ( defined( 'JETPACK__VERSION' ) ) {
                 <?php } } ?>
             </div>
             <div class="button_box d-flex">
-                <a href="<?php the_permalink();?>" class="in_btn in_btn_2">view details</a>
+                <a href="<?php the_permalink();?>" class="in_btn in_btn_2">View Details</a>
                 <button id="download-brochure" class="in_btn w-auto" data-bs-toggle="modal" data-bs-target="#dnldModal">
                     Download Brochure
                 </button>
-                <a href="#" class="in_btn ms-3"><i class="fa-solid fa-phone"></i>get call back</a>
+                <a href="<?php echo get_permalink() . '#side_bar'; ?>" class="in_btn ms-3"><i
+                        class="fa-solid fa-phone"></i>Get Call Back</a>
             </div>
         </div>
     </div>
@@ -637,6 +639,193 @@ if ( defined( 'JETPACK__VERSION' ) ) {
 		wp_die();
 	}
 
+
+	/**#####################################################################
+	 *        Handle AJAX Request for Category Page Filteration
+	 */#####################################################################
+	 add_action('wp_ajax_fetch_category_properties', 'fetch_propertiesCat');
+	 add_action('wp_ajax_nopriv_fetch_category_properties', 'fetch_propertiesCat');
+ 
+	 function fetch_propertiesCat() {
+		 $location = sanitize_text_field($_GET['locationCat']);
+		//  $room = sanitize_text_field($_GET['roomCat']);
+		 $categoryName = sanitize_text_field($_GET['categoryName']);
+		 $status = sanitize_text_field($_GET['statusCat']);
+		 $buyrent = sanitize_text_field($_GET['buyrentCat']);
+		 $min_budget = isset($_GET['min_budgetCat']) ? intval($_GET['min_budgetCat']) : '';
+		 $max_budget = isset($_GET['max_budgetCat']) ? intval($_GET['max_budgetCat']) : '';
+ 
+		 $args = array(
+			 'post_type' => 'property',
+			 'posts_per_page' => -1,
+			 'tax_query' => array(
+				array(
+					'taxonomy' => 'property-category',
+					'field'    => 'slug',
+					'terms'    => array( $categoryName ),  
+				)
+			)
+		 );
+ 
+		 // Property filter by : Budget Price (ACF Group Price min/max)
+		 if (!empty($min_budget) && !empty($max_budget)) {
+			 $args['meta_query'][] = array(
+				 'key' => 'property_price_min_price',
+				 'value' => array($min_budget, $max_budget),
+				 'compare' => 'BETWEEN',
+				 'type' => 'NUMERIC',
+			 );
+		 }
+
+		 // Property filter by : Property Status(ACF property_status)
+		if (!empty($status)) {
+			$args['meta_query'][] = array(
+				'key' => 'property_status',
+				'value' => $status,
+				'compare' => '=',
+			);
+		}
+
+		// Property filter by : Property Status(ACF property_buyrent)
+		if (!empty($buyrent)) {
+			$args['meta_query'][] = array(
+				'key' => 'property_buyrent',
+				'value' => $buyrent,
+				'compare' => '=',
+			);
+		}
+ 
+		 // Property filter by : Location (ACF main_location)
+		 if (!empty($location)) {
+			 $args['meta_query'][] = array(
+				 'key' => 'main_location',
+				 'value' => $location,
+				 'compare' => '=',
+			 );
+		 }
+ 
+		 // Property filter by : Room Capacity (ACF room_capacity)
+		//  if (!empty($room)) {
+		// 	$args['meta_query'][] = array(
+		// 		'key' => 'room_capacity',
+		// 		'value' => '"' . $room . '"',
+		// 		'compare' => 'LIKE',
+		// 	);
+		// }
+ 
+ 
+		 $property_query = new WP_Query($args);
+
+		//  echo "<pre>"; print_r($args);die();
+ 
+		 if ($property_query->have_posts()) {
+			 ob_start();
+			 while ($property_query->have_posts()) {
+				 $property_query->the_post();
+				 ?>
+
+<div class="col-md-6 mb-4" id="propertyListCat">
+    <div class="listing_card">
+        <div class="img_box">
+            <?php $featured_image = wp_get_attachment_url( get_post_thumbnail_id($post->ID) ); ?>
+            <img src="<?php echo $featured_image;?>" alt="" />
+        </div>
+        <div class="cont_box">
+            <div class="top">
+                <span class="prop_name"><?php the_title();?></span>
+
+                <?php
+				 $Price = get_field('property_price', $post->ID);
+				 if ($Price) { 
+					 $min_price = $Price['min_price'];
+					 $max_price = $Price['max_price'];
+ 
+					 if ($min_price >= 10000000) {
+						 $min_price_formatted = number_format($min_price / 10000000, 2) . ' cr';
+					 } elseif ($min_price >= 100000) {
+						 $min_price_formatted = number_format($min_price / 100000, 2) . ' lakh';
+					 } elseif($min_price >= 1000) {
+						 $min_price_formatted = number_format($min_price / 1000, 2) . ' K';
+					 }
+ 
+					 if ($max_price >= 10000000) {
+						 $max_price_formatted = number_format($max_price / 10000000, 2) . ' cr';
+					 } elseif ($max_price >= 100000) {
+						 $max_price_formatted = number_format($max_price / 100000, 2) . ' lakh';
+					 } elseif($max_price >= 1000) {
+						 $max_price_formatted = number_format($max_price / 1000, 2) . ' K';
+					 }
+				 ?>
+
+                <span class="prop_price">
+                    ₹ <?php if($min_price_formatted) { echo $min_price_formatted; } ?> -
+                    <?php if($max_price_formatted) { echo $max_price_formatted; } ?>
+                </span>
+
+
+                <?php } ?>
+
+            </div>
+            <p class="prop_dev"><?php echo get_field('property_contractor_name',$post->ID);?></p>
+            <?php $poss_date = get_field('possession_date',$post->ID);
+				 if($poss_date) { 
+					//  $date = DateTime::createFromFormat('d/m/Y', $poss_date);
+					//  $formatted_date = $date->format('jS F Y');?>
+            <span class="capsule">Possession Date: <?php echo $poss_date;?></span>
+            <?php } ?>
+            <?php 
+				 $property_map_value = get_field('main_location',$post->ID);
+				 $property_map_address = get_field('property_live_map',$post->ID);
+				 if($property_map_value) { ?>
+            <p id="location">
+                <i class="fa-solid fa-location-dot me-2"></i><a
+                    href="<?php echo $property_map_address;?>"><?php echo $property_map_value;?></a>
+            </p>
+            <?php } ?>
+
+
+            <?php $rera_no = get_field('property_rera_no',$post->ID);
+				 if($rera_no){ ?>
+            <span class="prop_rera">RERA No.: <?php echo $rera_no; ?></span>
+            <?php } ?>
+
+            <div class="details_box">
+                <?php 
+				 if(have_rows('room_specification',$post->ID)) { 
+					 while(have_rows('room_specification',$post->ID)) { 
+						 the_row(); 
+					 $capacity = get_sub_field('capacity');
+					 $size = get_sub_field('size');
+					 $price = get_sub_field('price');
+				 ?>
+                <div class="details">
+                    <span><?php echo $capacity;?></span><span><?php echo $size;?></span><span><?php echo $price;?></span>
+                </div>
+                <?php } } ?>
+            </div>
+            <div class="button_box d-flex">
+                <a href="<?php the_permalink();?>" class="in_btn in_btn_2">View Details</a>
+                <button id="download-brochure" class="in_btn w-auto" data-bs-toggle="modal" data-bs-target="#dnldModal">
+                    Download Brochure
+                </button>
+                <a href="<?php echo get_permalink() . '#side_bar'; ?>" class="in_btn ms-3"><i
+                        class="fa-solid fa-phone"></i>Get Call Back</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php
+			 }
+			 wp_reset_postdata();
+			 echo ob_get_clean();
+		 } else {
+			 echo '<h3 class="text-center">No Properties Found.</h3>';
+		 }
+ 
+		 wp_die();
+	 }
+	 
 
 
 /**
@@ -743,9 +932,9 @@ if ( defined( 'JETPACK__VERSION' ) ) {
             <p class="prop_dev"><?php echo get_field('property_contractor_name',$post->ID);?></p>
             <?php $poss_date = get_field('possession_date',$post->ID);
 				if($poss_date) { 
-					$date = DateTime::createFromFormat('d/m/Y', $poss_date);
-					$formatted_date = $date->format('jS F Y');?>
-            <span class="capsule">Possession Date: <?php echo $formatted_date;?></span>
+					// $date = DateTime::createFromFormat('d/m/Y', $poss_date);
+					// $formatted_date = $date->format('jS F Y');?>
+            <span class="capsule">Possession Date: <?php echo $poss_date;?></span>
             <?php } ?>
             <?php 
 						$property_map_value = get_field('main_location',$post->ID);
@@ -775,11 +964,12 @@ if ( defined( 'JETPACK__VERSION' ) ) {
                 <?php } } ?>
             </div>
             <div class="button_box d-flex">
-                <a href="<?php the_permalink();?>" class="in_btn in_btn_2">view details</a>
+                <a href="<?php the_permalink();?>" class="in_btn in_btn_2">View Details</a>
                 <button id="download-brochure" class="in_btn w-auto" data-bs-toggle="modal" data-bs-target="#dnldModal">
                     Download Brochure
                 </button>
-                <a href="#" class="in_btn ms-3"><i class="fa-solid fa-phone"></i>get call back</a>
+                <a href="<?php echo get_permalink() . '#side_bar'; ?>" class="in_btn ms-3"><i
+                        class="fa-solid fa-phone"></i>Get Call Back</a>
             </div>
         </div>
     </div>
@@ -795,7 +985,9 @@ if ( defined( 'JETPACK__VERSION' ) ) {
 	}
 
 
-	
+
+
+
 /**
 * #######################################################################
 *	 Show Amenities Checkbox in Property Post by 'checkbox_amenities'
@@ -857,7 +1049,7 @@ add_action('wp_enqueue_scripts', 'custom_inline_script');
 
 /**
 * #################################################################
-*		 Show Post Title into email Template Dinamically
+*		 Show Post Title into email Template Dynamically
 * #################################################################
 */
 	function add_post_title_to_cf7( $html ) {
@@ -1038,3 +1230,44 @@ function create_partners_post_type() {
 	);
 }
 add_action( 'init', 'create_partners_post_type' );
+
+
+
+/**
+* #################################################################
+*		 Auto Suggest Property Name in Header Search Form
+* #################################################################
+*/
+	function property_name_suggestions() {
+		if (!isset($_POST['search'])) {
+			wp_die();
+		}
+
+		global $wpdb;
+		$search_term = sanitize_text_field($_POST['search']);
+		
+		$query = $wpdb->prepare(
+			"SELECT ID, post_title FROM {$wpdb->posts} 
+			WHERE post_type = 'property' 
+			AND post_status = 'publish' 
+			AND post_title LIKE %s 
+			ORDER BY post_title ASC 
+			LIMIT 10",
+			'%' . $search_term . '%'
+		);
+
+		$results = $wpdb->get_results($query);
+
+		if (!empty($results)) {
+			foreach ($results as $post) {
+				echo '<div class="suggestion-item" data-id="' . esc_attr($post->ID) . '">' . esc_html($post->post_title) . '</div>';
+			}
+		} else {
+			echo '<div class="suggestion-item">No results found</div>';
+		}
+
+		wp_die();
+	}
+
+	add_action('wp_ajax_property_name_suggestions', 'property_name_suggestions');
+	add_action('wp_ajax_nopriv_property_name_suggestions', 'property_name_suggestions');

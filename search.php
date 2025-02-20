@@ -8,46 +8,42 @@
  */
 
 get_header();
+
+
+$terms = get_the_terms(get_the_ID(), 'property-category');
+
+if ($terms) {
+    $first_term = $terms[0]->slug; 
+    
+    if ($first_term == 'warehouse') {
+        get_template_part('template-parts/single-property', 'warehouse');
+    } elseif ($first_term == 'land') {
+        get_template_part('template-parts/single-property', 'land');
+    } else {
+        get_template_part('template-parts/single-property', 'default'); 
+    }
+} else {
+    get_template_part('template-parts/single-property', 'default');
+}
+
 ?>
 
-	<main id="primary" class="site-main">
 
-		<?php if ( have_posts() ) : ?>
+<!-- <script>
+jQuery(document).ready(function($) {
+    document.addEventListener('wpcf7mailsent', function(event) {
+        if (event.detail.contactFormId == '1300') {
+            $('.floorPlan').click();
+            $('.tab-content .tab-pane').each(function() {
+                $(this).find('#withOutLogin').hide();
+                $(this).find('#withLogin').show();
+            });
+        }
+    });
+});
+</script> -->
 
-			<header class="page-header">
-				<h1 class="page-title">
-					<?php
-					/* translators: %s: search query. */
-					printf( esc_html__( 'Search Results for: %s', 'pioneer_property' ), '<span>' . get_search_query() . '</span>' );
-					?>
-				</h1>
-			</header><!-- .page-header -->
 
-			<?php
-			/* Start the Loop */
-			while ( have_posts() ) :
-				the_post();
-
-				/**
-				 * Run the loop for the search to output the results.
-				 * If you want to overload this in a child theme then include a file
-				 * called content-search.php and that will be used instead.
-				 */
-				get_template_part( 'template-parts/content', 'search' );
-
-			endwhile;
-
-			the_posts_navigation();
-
-		else :
-
-			get_template_part( 'template-parts/content', 'none' );
-
-		endif;
-		?>
-
-	</main><!-- #main -->
 
 <?php
-get_sidebar();
 get_footer();

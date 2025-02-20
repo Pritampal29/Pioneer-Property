@@ -20,7 +20,7 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <!-- <title>Pioneer</title> -->
     <?php wp_head(); ?>
-    <meta name="robots" content="noindex, follow" />
+    <meta name="robots" content="index, follow" />
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <!-- Favicon -->
@@ -29,10 +29,12 @@
     <!-- CSS ============================================ -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
-        rel="stylesheet" />
+    <link href="
+    https://cdn.jsdelivr.net/npm/gotham-fonts@1.0.3/css/gotham-rounded.min.css
+    " rel="stylesheet" />
+
     <!-- Icon Font CSS -->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
     <!-- Plugins CSS -->
@@ -66,66 +68,39 @@
                                 alt="" /></a>
                     </div>
 
-                    <?php if(!is_front_page() && !is_tax('property-category') && !is_archive() && !is_singular('post') && !is_singular('partners') && !is_page( array( 'login', 'register', 'profile', 'account', 'members', 'user' ) )) { ?>
+                    <!-- <form class="advname_search" role="search" method="get"
+                        action="<?php echo esc_url(home_url('/')); ?>">
+                        <div class="search-bar" style="width:400px;">
+                            <input class="searchInput" type="text" name="s" placeholder="Search by name...">
+                            <input type="hidden" name="post_type" value="property">
+                            <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                    </form> -->
 
-                    <form action="<?php echo site_url('/property/');?>" method="get" class="adv_search">
-                        <div class="search-bar">
-
-                            <select name="location" id="location" class="nice_select">
-                                <option value="">Select Location</option>
-                                <?php
-                                $args = array(
-                                    'post_type' => 'property',
-                                    'posts_per_page' => -1,
-                                );
-                                $property_query = new WP_Query($args);
-
-                                $property_types = array();
-
-                                if ($property_query->have_posts()) {
-                                    while ($property_query->have_posts()) {
-                                        $property_query->the_post();
-
-                                        $property_type = get_field('main_location');
-
-                                        if (!in_array($property_type, $property_types)) {
-                                            $property_types[] = $property_type;
-                                        }
-                                    }
-                                    wp_reset_postdata();
-
-                                    foreach ($property_types as $type) {
-                                        echo '<option value="' . $type . '">' . ucfirst($type) . '</option>';
-                                    }
-                                }
-                            ?>
-                            </select>
-
-                            <?php
-                                $args = array(
-                                    'taxonomy' => 'property-category',
-                                );
-
-                                $cats = get_categories($args);
-                                ?>
-
-                            <select name="category" id="category" class="nice_select">
-                                <option value="">Type of property</option>
-                                <?php foreach ($cats as $cat) { ?>
-                                <option value="<?php echo $cat->slug; ?>"><?php echo $cat->name; ?></option>
-                                <?php } ?>
-                            </select>
+                    <form class="advname_search" role="search" method="get"
+                        action="<?php echo esc_url(home_url('/')); ?>">
+                        <div class="search-bar" style="width:350px; position: relative;">
+                            <input class="searchInput" id="searchInput" type="text" name="s"
+                                placeholder="Search by name...">
+                            <input type="hidden" name="post_type" value="property">
+                            <div class="srch_icn"><i class="fa-solid fa-magnifying-glass"></i></div>
+                            <div id="suggestions" class="suggestion-box"></div>
+                        </div>
+                    </form>
 
 
-                            <input class="searchInput" type="text" placeholder="Search..." name="prop_name" />
 
+
+                    <!-- <form action="<?php echo site_url('/property/');?>" method="get" class="advname_search">
+                        <div class="search-bar" style="width:400px;">
+                            <input class="searchInput" type="text" placeholder="Search by name..." name="prop_name" />
                             <button type="submit">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </button>
                         </div>
-                    </form>
+                    </form> -->
 
-                    <?php } ?>
+
 
                     <!-- Header Meta Start -->
                     <div class="header-meta">
@@ -146,20 +121,23 @@
                                 <!-- <li>
                                     <a href="<?php echo site_url('/login/');?>" class="in_btn">Login </a>
                                 </li> -->
-                                <li>
+                                <!-- <li>
                                     <?php if ( is_user_logged_in() ) { ?>
                                     <a href="<?php echo site_url('/logout/'); ?>" class="in_btn">Logout</a>
                                     <?php } else { ?>
                                     <a href="<?php echo site_url('/login/'); ?>" class="in_btn">Login</a>
                                     <?php } ?>
-                                </li>
+                                </li> -->
                             </ul>
                         </div>
                         <!-- Header Social End -->
 
                         <!-- Header Toggle Start -->
                         <div class="header-toggle">
-                            <a href="<?php echo site_url();?>" class="me-3"><i class="fa-solid fa-house"></i></a>
+                            <a class="searchIcn d-inline-block d-md-none me-3"><i
+                                    class="fa-solid fa-filter mobile_srch"></i></a>
+
+                            <!-- <a href="<?php echo site_url();?>" class="me-3"><i class="fa-solid fa-house"></i></a> -->
 
                             <button data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample">
                                 <i class="fa-solid fa-bars"></i>
@@ -231,3 +209,190 @@
             </div>
         </div>
     </div>
+
+
+    <!-- <div class="modal fade" id="exampleModalsearch" tabindex="-1" aria-labelledby="exampleModalsearchLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <div class="mobile_search">
+        <div class="container search_cont">
+            <form action="<?php echo site_url('/property/');?>" method="get" class="adv_search">
+                <div class="search_row">
+
+                    <?php
+                                $args = array(
+                                    'taxonomy' => 'property-category',
+                                );
+                                $cats = get_categories($args); ?>
+                    <select name="category" id="category" class=" category areas nice_select">
+                        <option value="">Property Type</option>
+                        <?php foreach ($cats as $cat) { ?>
+                        <option value="<?php echo $cat->slug; ?>"><?php echo $cat->name; ?></option>
+                        <?php } ?>
+                    </select>
+
+                    <select name="location" id="location" class="property nice_select">
+                        <option value="">All Locations</option>
+                        <?php
+                                $args = array(
+                                    'post_type' => 'property',
+                                    'posts_per_page' => -1,
+                                );
+                                $property_query = new WP_Query($args);
+
+                                $property_types = array();
+                                if ($property_query->have_posts()) {
+                                    while ($property_query->have_posts()) {
+                                        $property_query->the_post();
+
+                                        $property_type = get_field('main_location');
+
+                                        if (!in_array($property_type, $property_types)) {
+                                            $property_types[] = $property_type;
+                                        }
+                                    }
+                                    wp_reset_postdata();
+
+                                    foreach ($property_types as $type) {
+                                        echo '<option value="' . $type . '">' . ucfirst($type) . '</option>';
+                                    }
+                                }
+                            ?>
+                    </select>
+
+                    <?php
+                            $args = array(
+                                'post_type'      => 'property',
+                                'posts_per_page' => 1,
+                            );
+                            $property_query = new WP_Query($args);
+
+                            if ($property_query->have_posts()) {
+                                while($property_query->have_posts()) {
+                                    $property_query->the_post(); 
+                                    $field = get_field_object('room_capacity');
+
+                                    if ($field) {
+                                        $choices = $field['choices']; ?>
+                    <select name="roomCat" id="roomCat" class="nice_select more_option select_bhk">
+                        <option value="">Select Specification</option>
+                        <?php foreach ($choices as $value1 => $label1) { ?>
+                        <option value="<?php echo esc_attr($value1); ?>">
+                            <?php echo esc_html($label1); ?></option>
+                        <?php } ?>
+                    </select>
+                    <?php } } }
+                                    wp_reset_postdata(); ?>
+
+                    <div class="filter_li_home budget">
+                        <div class="select_box" id="budget_box_2">
+                            <select name="budget" id="budget" class="nice_select  more_option">
+                                <option value="">Max. Price</option>
+                            </select>
+                        </div>
+                        <div class="slider_box-2">
+                            <div class="form-group">
+                                <label for="loan-amount-new">₹ <span id="loan-amount-value-new">10000000</span></label>
+                                <input type="range" id="loan-amount-new" name="max_budget" min="0" max="100000000"
+                                    step="500000" value="100000000" />
+                                <input type="hidden" id="min-budget" name="min_budget" value="100000" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="d-flex s_box">
+
+                    <button class="in_btn" type="submit">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <script>
+    function formatAmount(value) {
+        if (value >= 10000000) {
+            return (value / 10000000).toFixed(2) + 'Cr';
+        } else if (value >= 100000) {
+            return (value / 100000).toFixed(2) + 'L';
+        }
+        return value;
+    }
+
+    document.getElementById('loan-amount-new').addEventListener('input', function() {
+        var value = this.value;
+        document.getElementById('loan-amount-value-new').textContent = formatAmount(value);
+    });
+
+    // document.getElementById('loan-amount-new').addEventListener('input', function() {
+    //     var value = this.value;
+    //     document.getElementById('loan-amount-value-new').textContent = value;
+    // });
+    </script>
+    <script>
+    $(document).ready(function() {
+        $(document).on("click", ".nice-select.category.areas .option", function() {
+            var categoryWiseData = [{
+                    category: 'residential',
+                    types: ['1 BHK', '2 BHK', '3 BHK', '4 BHK', '5 BHK', '6 BHK', '8 BHK', 'Duplex',
+                        'Triplex', 'Penthouse', 'Studio'
+                    ]
+                },
+                {
+                    category: 'commercial',
+                    types: ['Office-IT-ITes', 'Mall-Shopping Complex', 'Retail Hi-Street']
+                },
+                {
+                    category: 'warehouse',
+                    types: ['Warehouse', 'Factoryshed']
+                },
+                {
+                    category: 'land',
+                    types: ['Residential Project', 'Commercial', 'Industrial']
+                },
+                {
+                    category: 'bungalow',
+                    types: ['Bungalow']
+                }
+            ];
+
+            var selectedValue = $(this).attr("data-value");
+
+            const newValue = categoryWiseData.filter((value) => value.category == selectedValue);
+
+            const finalValue = newValue ? newValue[0].types : [];
+
+            var $targetDropdown = $(".nice-select.nice_select.more_option.select_bhk");
+
+            var optionsHtml = finalValue.map(type =>
+                `<li data-value="${type}" class="option">${type}</li>`).join("");
+            $targetDropdown.find("ul.list").html(optionsHtml);
+
+            if (finalValue.length > 0) {
+                $targetDropdown.find("span.current").text(finalValue[0]);
+            } else {
+                $targetDropdown.find("span.current").text("Select Specification");
+            }
+
+        });
+    });
+    </script>
+
+
+    <style>
+    .slider_box-2 {
+        display: none;
+    }
+    </style>

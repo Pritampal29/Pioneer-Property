@@ -77,8 +77,6 @@ global $post;
                             ?>
                             </select>
 
-
-
                             <?php
                             $args = array(
                                 'post_type'      => 'property',
@@ -93,8 +91,8 @@ global $post;
 
                                     if ($field) {
                                         $choices = $field['choices']; ?>
-                            <select name="roomCat" id="roomCat" class="nice_select more_option select_bhk">
-                                <option value="">Select Specification</option>
+                            <select name="roomCat" id="roomCat" class="nice_select more_option">
+                                <option value="">Select BHK</option>
                                 <?php foreach ($choices as $value1 => $label1) { ?>
                                 <option value="<?php echo esc_attr($value1); ?>">
                                     <?php echo esc_html($label1); ?></option>
@@ -1308,49 +1306,10 @@ document.getElementById('loan-amount').addEventListener('input', function() {
 
 get_footer();?>
 
-<script>
-$(document).ready(function() {
-    $(document).on("click", ".nice-select.category.areas .option", function() {
-        var categoryWiseData = [{
-                category: 'residential',
-                types: ['1 BHK', '2 BHK', '3 BHK', '4 BHK', '5 BHK', '6 BHK', '8 BHK', 'Duplex',
-                    'Triplex', 'Penthouse', 'Studio'
-                ]
-            },
-            {
-                category: 'commercial',
-                types: ['Office-IT-ITes', 'Mall-Shopping Complex', 'Retail Hi-Street']
-            },
-            {
-                category: 'warehouse',
-                types: ['Warehouse', 'Factoryshed']
-            },
-            {
-                category: 'land',
-                types: ['Residential Project', 'Commercial', 'Industrial']
-            },
-            {
-                category: 'bungalow',
-                types: ['Bungalow']
-            },
-            {
-                category: 'prelease',
-                types: ['new']
-            }
-        ];
 
-        var selectedValue = $(this).attr("data-value");
-        const newValue = categoryWiseData.filter((value) => value.category == selectedValue);
-        const finalValue = newValue ? newValue[0].types : [];
-        var $targetDropdown = $(".nice-select.nice_select.more_option.select_bhk");
-        var optionsHtml = finalValue.map(type => `<li data-value="${type}" class="option">${type}</li>`)
-            .join("");
-        $targetDropdown.find("ul.list").html(optionsHtml);
-        if (finalValue.length > 0) {
-            $targetDropdown.find("span.current").text(finalValue[0]);
-        } else {
-            $targetDropdown.find("span.current").text("Select Specification");
-        }
-    });
+<script>
+$(document).on("click", ".nice-select.category.areas .option", function() {
+    var selectedValue = $(this).attr("data-value");
+    console.log(selectedValue);
 });
 </script>

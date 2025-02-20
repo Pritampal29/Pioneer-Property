@@ -12,9 +12,12 @@
 ?>
 
 <?php if(!is_404( )) { ?>
-
 <!-- Footer Section Start -->
 <div class="footer">
+    <!-- footer lead formsection -->
+
+
+
     <!-- footer top  -->
     <div class="section footer-section footer-section-03">
         <div class="container-fluid">
@@ -206,6 +209,16 @@
 </div>
 <!-- back to top end -->
 <div id="backdrop" class="backdrop"></div>
+
+<?php if(is_front_page()) {?>
+<div class="section-top_footer">
+    <div class="container">
+        <h2 class="section_title__heading">GET IN TOUCH</h2>
+        <?php echo do_shortcode('[contact-form-7 id="2e9880d" title="Footer Sticky Form"]');?>
+    </div>
+</div>
+<?php } ?>
+
 <!-- JS
     ============================================ -->
 <script src="<?php echo get_template_directory_uri();?>/js/jquery-1.12.4.min.js"></script>
@@ -223,6 +236,87 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
 
 <?php wp_footer(); ?>
+
+
+
+
+
+<!-- /**
+   * #####################################################
+   *         AJAX Requests Heder Auto Suggestion
+   * #####################################################
+   */ -->
+
+<script>
+// jQuery(document).ready(function($) {
+//     $("#searchInput").keyup(function() {
+//         var searchText = $(this).val();
+//         if (searchText.length > 2) { 
+//             $.ajax({
+//                 url: "<?php echo admin_url('admin-ajax.php'); ?>",
+//                 type: "POST",
+//                 data: {
+//                     action: "property_name_suggestions",
+//                     search: searchText
+//                 },
+//                 success: function(response) {
+//                     $("#suggestions").html(response).fadeIn();
+//                 }
+//             });
+//         } else {
+//             $("#suggestions").fadeOut();
+//         }
+//     });
+
+//     $("#suggestions").delegate(".suggestion-item", "click", function() {
+//         $("#searchInput").val($(this).text());
+//         $("#suggestions").fadeOut();
+//     });
+
+//     $(document).click(function(e) {
+//         if (!$(e.target).closest(".search-bar").length) {
+//             $("#suggestions").fadeOut();
+//         }
+//     });
+// });
+
+jQuery(document).ready(function($) {
+    $("#searchInput").keyup(function() {
+        var searchText = $(this).val();
+        if (searchText.length > 0) {
+            $.ajax({
+                url: "<?php echo admin_url('admin-ajax.php'); ?>",
+                type: "POST",
+                data: {
+                    action: "property_name_suggestions",
+                    search: searchText
+                },
+                success: function(response) {
+                    $("#suggestions").html(response).fadeIn();
+                }
+            });
+        } else {
+            $("#suggestions").fadeOut();
+        }
+    });
+
+    $("#suggestions").delegate(".suggestion-item", "click", function() {
+        var selectedText = $(this).text();
+        $("#searchInput").val(selectedText);
+        $("#suggestions").fadeOut();
+
+        $(".advname_search").submit();
+    });
+
+    $(document).click(function(e) {
+        if (!$(e.target).closest(".search-bar").length) {
+            $("#suggestions").fadeOut();
+        }
+    });
+});
+</script>
+
+
 </body>
 
 </html>
