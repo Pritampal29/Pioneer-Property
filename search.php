@@ -25,23 +25,27 @@ if ($terms) {
 } else {
     get_template_part('template-parts/single-property', 'default');
 }
-
 ?>
 
 
-<!-- <script>
-jQuery(document).ready(function($) {
-    document.addEventListener('wpcf7mailsent', function(event) {
-        if (event.detail.contactFormId == '1300') {
-            $('.floorPlan').click();
-            $('.tab-content .tab-pane').each(function() {
-                $(this).find('#withOutLogin').hide();
-                $(this).find('#withLogin').show();
-            });
+<!-- Get the id from Session Value -->
+<?php
+$_SESSION['property_id'] = get_the_ID();
+?>
+
+<!-------- Script for page redirection after successfully submission of CF7 -------->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('wpcf7mailsent', function (event) {
+    
+        if (event.detail.contactFormId == '591') {
+            let propertyTitle = "<?php echo urlencode(get_the_title()); ?>"; 
+            let redirectUrl = "<?php echo site_url('/thank-you/'); ?>?title=" + propertyTitle;
+            window.location.href = redirectUrl;
         }
-    });
+    }, false);
 });
-</script> -->
+</script>
 
 
 

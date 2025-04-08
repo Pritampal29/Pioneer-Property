@@ -224,7 +224,7 @@
 
     <div class="mobile_search">
         <div class="container search_cont">
-            <form action="<?php echo site_url('/property/');?>" method="get" class="adv_search">
+            <form action="<?php echo site_url('/propsearch/');?>" method="get" class="adv_search">
                 <div class="search_row">
 
                     <?php
@@ -283,7 +283,7 @@
                                     if ($field) {
                                         $choices = $field['choices']; ?>
                     <select name="roomCat" id="roomCat" class="nice_select more_option select_bhk">
-                        <option value="">Select Specification</option>
+                        <option value="">Room</option>
                         <?php foreach ($choices as $value1 => $label1) { ?>
                         <option value="<?php echo esc_attr($value1); ?>">
                             <?php echo esc_html($label1); ?></option>
@@ -291,6 +291,32 @@
                     </select>
                     <?php } } }
                                     wp_reset_postdata(); ?>
+
+                    
+<?php
+                            $args = array(
+                                'post_type'      => 'property',
+                                'posts_per_page' => 1,
+                            );
+                            $property_query = new WP_Query($args);
+
+                            if ($property_query->have_posts()) {
+                                while($property_query->have_posts()) {
+                                    $property_query->the_post(); 
+                                    $field = get_field_object('type_specification');
+
+                                    if ($field) {
+                                        $choice = $field['choices']; ?>
+                            <select name="typeCat" id="typeCat" class="nice_select more_option select_type">
+                                <option value="">Type</option>
+                                <?php foreach ($choice as $value2 => $label2) { ?>
+                                <option value="<?php echo esc_attr($value2); ?>">
+                                    <?php echo esc_html($label2); ?></option>
+                                <?php } ?>
+                            </select>
+                            <?php } } }
+                                    wp_reset_postdata(); ?>
+
 
                     <div class="filter_li_home budget">
                         <div class="select_box" id="budget_box_2">
@@ -300,9 +326,9 @@
                         </div>
                         <div class="slider_box-2">
                             <div class="form-group">
-                                <label for="loan-amount-new">₹ <span id="loan-amount-value-new">10000000</span></label>
-                                <input type="range" id="loan-amount-new" name="max_budget" min="0" max="100000000"
-                                    step="500000" value="100000000" />
+                                <label for="loan-amount-new">₹ <span id="loan-amount-value-new">50Cr</span></label>
+                                <input type="range" id="loan-amount-new" name="max_budget" min="1500000" max="500000000"
+                                    step="500000" value="500000000" />
                                 <input type="hidden" id="min-budget" name="min_budget" value="100000" />
                             </div>
                         </div>
@@ -341,7 +367,34 @@
     //     document.getElementById('loan-amount-value-new').textContent = value;
     // });
     </script>
-    <script>
+
+
+<script>
+jQuery(document).ready(function($) {
+    const selectBhk = $(".nice-select.nice_select.more_option.select_bhk");
+    const selectType = $(".nice-select.nice_select.more_option.select_type");
+    selectBhk.hide();
+    selectType.hide();
+
+    $(document).on("click", ".nice-select.category.areas .option", function() {
+        var selectedCategory = $(this).attr("data-value");
+        
+        if (selectedCategory === "residential") {
+            selectBhk.show();
+            selectType.hide();
+        } else if (selectedCategory !== "") {
+            selectBhk.hide();
+            selectType.show();
+        } else {
+            selectBhk.hide();
+            selectType.hide();
+        }
+    });
+});
+</script>
+
+
+    <!-- <script>
     $(document).ready(function() {
         $(document).on("click", ".nice-select.category.areas .option", function() {
             var categoryWiseData = [{
@@ -388,7 +441,7 @@
 
         });
     });
-    </script>
+    </script> -->
 
 
     <style>

@@ -23,7 +23,11 @@ global $post;
                     while(have_rows('banner_images',$post->ID)) {
                         the_row();?>
                 <div class="swiper-slide hero_bg"
-                    style="background-image: url(<?php echo get_sub_field('ban_images',$post->ID);?>)"></div>
+                    style="background-image: url(<?php echo get_sub_field('ban_images',$post->ID);?>)">
+                    <div class="banner-text">
+                        <h1><?php echo get_sub_field('banner_text',$post->ID);?></h1>
+                    </div>
+                </div>
                 <?php } } ?>
             </div>
             <div class="swiper-pagination"></div>
@@ -33,7 +37,7 @@ global $post;
         <div class="container search_cont">
             <div class="row">
                 <div class="col-12">
-                    <form action="<?php echo site_url('/property/');?>" method="get" class="adv_search">
+                    <form action="<?php echo site_url('/propsearch/');?>" method="get" class="adv_search">
                         <div class="search_row">
 
                             <?php
@@ -94,7 +98,7 @@ global $post;
                                     if ($field) {
                                         $choices = $field['choices']; ?>
                             <select name="roomCat" id="roomCat" class="nice_select more_option select_bhk">
-                                <option value="">Select Specification</option>
+                                <option value="">Room</option>
                                 <?php foreach ($choices as $value1 => $label1) { ?>
                                 <option value="<?php echo esc_attr($value1); ?>">
                                     <?php echo esc_html($label1); ?></option>
@@ -102,6 +106,36 @@ global $post;
                             </select>
                             <?php } } }
                                     wp_reset_postdata(); ?>
+
+
+
+
+                            <?php
+                            $args = array(
+                                'post_type'      => 'property',
+                                'posts_per_page' => 1,
+                            );
+                            $property_query = new WP_Query($args);
+
+                            if ($property_query->have_posts()) {
+                                while($property_query->have_posts()) {
+                                    $property_query->the_post(); 
+                                    $field = get_field_object('type_specification');
+
+                                    if ($field) {
+                                        $choice = $field['choices']; ?>
+                            <select name="typeCat" id="typeCat" class="nice_select more_option select_type">
+                                <option value="">Type</option>
+                                <?php foreach ($choice as $value2 => $label2) { ?>
+                                <option value="<?php echo esc_attr($value2); ?>">
+                                    <?php echo esc_html($label2); ?></option>
+                                <?php } ?>
+                            </select>
+                            <?php } } }
+                                    wp_reset_postdata(); ?>
+
+
+
 
                             <div class="filter_li_home budget">
                                 <div class="select_box" id="budget_box">
@@ -111,9 +145,9 @@ global $post;
                                 </div>
                                 <div class="slider_box">
                                     <div class="form-group">
-                                        <label for="loan-amount">₹ <span id="loan-amount-value">1Cr</span></label>
-                                        <input type="range" id="loan-amount" name="max_budget" min="0" max="100000000"
-                                            step="500000" value="100000000" />
+                                        <label for="loan-amount">₹ <span id="loan-amount-value">50Cr</span></label>
+                                        <input type="range" id="loan-amount" name="max_budget" min="1500000"
+                                            max="500000000" step="500000" value="500000000" />
                                     </div>
                                 </div>
                             </div>
@@ -168,6 +202,18 @@ global $post;
                 ?>
 
                 <div class="col-lg-4 col-md-6 mb-3 position-relative new_card ">
+
+                    <!-- Featured And Sale SHOW Section Start -->
+                    <?php 
+                        $prop_tags = get_field('property_tag', $post->ID);
+                        if ($prop_tags) { ?>
+                    <div class="offer_box _in">
+                        <?php foreach ($prop_tags as $tag) { ?>
+                        <span class="offer"><?php echo esc_html($tag);?></span>
+                        <?php } ?>
+                    </div>
+                    <?php } ?>
+                    <!-- Featured And Sale SHOW Section End -->
                     <div class="swiper card_slider">
                         <div class="swiper-wrapper">
 
@@ -215,10 +261,20 @@ global $post;
                                 } elseif($min_price >= 1000) {
                                     $min_price_formatted = number_format($min_price / 1000, 2) . ' K';
                                 }?>
+
+                        <?php
+					$button_value = get_field('price_on_request',$post->ID);
+					if($button_value == 'Show'){ ?>
                         <div class="price">Starts From
                             <span>₹ <?php echo $min_price_formatted;?></span>
                         </div>
-                        <?php } ?>
+                        <?php }elseif($button_value == 'Hide'){?>
+                        <div class="price">
+                            <span>Price on request</span>
+                        </div>
+                        <?php } } ?>
+
+
                         <?php $poss_date = get_field_object('possession_date',$post->ID);
                             if($poss_date) { 
                                 // $date = DateTime::createFromFormat('d/m/Y', $poss_date['value']);
@@ -272,6 +328,18 @@ global $post;
                 ?>
 
                 <div class="col-lg-4 col-md-6 mb-3 position-relative new_card ">
+                    <!-- Featured And Sale SHOW Section Start -->
+                    <?php 
+                        $prop_tags = get_field('property_tag', $post->ID);
+                        if ($prop_tags) { ?>
+                    <div class="offer_box _in">
+                        <?php foreach ($prop_tags as $tag) { ?>
+                        <span class="offer"><?php echo esc_html($tag);?></span>
+                        <?php } ?>
+                    </div>
+                    <?php } ?>
+                    <!-- Featured And Sale SHOW Section End -->
+
                     <div class="swiper card_slider">
                         <div class="swiper-wrapper">
 
@@ -319,10 +387,17 @@ global $post;
                                 } elseif($min_price >= 1000) {
                                     $min_price_formatted = number_format($min_price / 1000, 2) . ' K';
                                 }?>
+                        <?php
+					$button_value = get_field('price_on_request',$post->ID);
+					if($button_value == 'Show'){ ?>
                         <div class="price">Starts From
                             <span>₹ <?php echo $min_price_formatted;?></span>
                         </div>
-                        <?php } ?>
+                        <?php }elseif($button_value == 'Hide'){?>
+                        <div class="price">
+                            <span>Price on request</span>
+                        </div>
+                        <?php } } ?>
                         <?php $poss_date = get_field_object('possession_date',$post->ID);
                             if($poss_date) { 
                                 // $date = DateTime::createFromFormat('d/m/Y', $poss_date['value']);
@@ -562,10 +637,12 @@ global $post;
                         <?php while (have_rows('category_repeater', $post->ID)) {
                         the_row(); ?>
                         <div class="col-md-3">
-                            <div class="_box">
-                                <img src="<?php echo get_sub_field('images'); ?>" alt="" />
-                                <span><?php echo get_sub_field('title'); ?></span>
-                            </div>
+                            <a href="<?php echo get_sub_field('category_url'); ?>">
+                                <div class="_box">
+                                    <img src="<?php echo get_sub_field('images'); ?>" alt="" />
+                                    <span><?php echo get_sub_field('title'); ?></span>
+                                </div>
+                            </a>
                         </div>
                         <?php } ?>
                     </div>
@@ -595,7 +672,7 @@ global $post;
             </div>
 
 
-            <div class="location_box_wrap">
+            <!-- <div class="location_box_wrap">
                 <div class="chrismas_light_tab">
                     <div class="text-center">
                         <?php
@@ -705,6 +782,124 @@ global $post;
                         <?php $i++; } } ?>
                     </div>
                 </div>
+            </div> -->
+
+
+            <div class="location_box_wrap">
+                <div class="chrismas_light_tab">
+                    <div class="text-center">
+                        <?php
+                        $categories = get_categories(array(
+                            'taxonomy' => 'property-category', 
+                            'hide_empty' => false,
+                        )); ?>
+                        <ul class="nav nav-pills mb-2 mt-4 d-flex justify-content-center" id="pills-tab" role="tablist">
+                            <?php if (!empty($categories)) {
+                                    $i = 1;
+                                    foreach ($categories as $category) {
+                                ?>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link <?php echo ($i == 6) ? 'active' : ''; ?>"
+                                    id="pills-<?php echo $category->slug; ?>-tab" data-bs-toggle="pill"
+                                    data-bs-target="#pills-<?php echo $category->slug; ?>" type="button" role="tab"
+                                    aria-controls="pills-<?php echo $category->slug; ?>"
+                                    aria-selected="true"><?php echo $category->name; ?></button>
+                            </li>
+                            <?php $i++; } } ?>
+                        </ul>
+                    </div>
+
+                    <div class="tab-content" id="pills-tabContent">
+                        <?php
+                        if (!empty($categories)) {
+                            $i = 1;
+                            foreach ($categories as $category) {
+                        ?>
+                        <div class="tab-pane fade <?php echo ($i == 6) ? 'show active' : ''; ?>"
+                            id="pills-<?php echo $category->slug; ?>" role="tabpanel"
+                            aria-labelledby="pills-<?php echo $category->slug; ?>-tab">
+                            <div class="row">
+                                <?php
+                    $all_locations = [];
+
+                    $args = [
+                        'post_type'      => 'property',
+                        'posts_per_page' => -1,
+                        'post_status'    => 'publish',
+                        'tax_query'      => [
+                            [
+                                'taxonomy' => 'property-category',
+                                'field'    => 'slug',
+                                'terms'    => $category->slug,
+                            ],
+                        ],
+                    ];
+
+                    $property_query = new WP_Query($args);
+
+                    if ($property_query->have_posts()) {
+                        while ($property_query->have_posts()) {
+                            $property_query->the_post();
+
+                            $locations = get_field('main_location');
+                            if ($locations) {
+                                $locations = is_array($locations) ? $locations : [$locations];
+
+                                foreach ($locations as $location) {
+                                    if (!isset($all_locations[$location])) {
+                                        $all_locations[$location] = 0;
+                                    }
+                                    $all_locations[$location]++;
+                                }
+                            }
+                        }
+                        wp_reset_postdata();
+                    }
+
+                    if (!empty($all_locations)) {
+                        foreach ($all_locations as $location => $count) {
+                            $location_image = '';
+                            if (have_rows('locations', 'options')) {
+                                while (have_rows('locations', 'options')) {
+                                    the_row();
+                                    $field_location_name = get_sub_field('location_name');
+
+                                    if ($field_location_name == $location) {
+                                        $location_image = get_sub_field('location_image');
+                                    }
+                                }
+                            }
+
+                            $location_slug = sanitize_title($location);
+                            $location_link = site_url('/location/' . $location_slug);
+                        ?>
+                                <div class="col-md-4">
+                                    <a href="<?php echo esc_url(home_url('/location/?location=' . urlencode($location) . '&category=' . urlencode($category->slug))); ?>"
+                                        class="property_card">
+
+
+                                        <div class="row align-items-center">
+                                            <div class="col-6">
+                                                <div class="img_box">
+                                                    <img src="<?php echo esc_url($location_image); ?>" alt="image">
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="cont_box">
+                                                    <h3><?php echo esc_html($location); ?></h3>
+                                                    <p><?php echo esc_html($count); ?> Properties</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+
+                                <?php } } ?>
+                            </div>
+                        </div>
+                        <?php $i++; } } ?>
+                    </div>
+                </div>
             </div>
 
 
@@ -799,8 +994,6 @@ global $post;
                 </div>
 
             </div> -->
-
-
 
         </div>
     </section>
@@ -1208,7 +1401,7 @@ global $post;
                                 ?>
                                 <div class="swiper-slide">
                                     <a href="<?php the_permalink();?>">
-                                        <div class="property_card">
+                                        <div class="property_card mb-0">
                                             <div class="img_box">
                                                 <?php $featured_image = wp_get_attachment_url( get_post_thumbnail_id($post->ID) ); ?>
                                                 <img src="<?php echo $featured_image;?>" alt="" />
@@ -1308,7 +1501,34 @@ document.getElementById('loan-amount').addEventListener('input', function() {
 
 get_footer();?>
 
+
 <script>
+jQuery(document).ready(function($) {
+    const selectBhk = $(".nice-select.nice_select.more_option.select_bhk");
+    const selectType = $(".nice-select.nice_select.more_option.select_type");
+    selectBhk.hide();
+    selectType.hide();
+
+    $(document).on("click", ".nice-select.category.areas .option", function() {
+        var selectedCategory = $(this).attr("data-value");
+
+        if (selectedCategory === "residential") {
+            selectBhk.show();
+            selectType.hide();
+        } else if (selectedCategory !== "") {
+            selectBhk.hide();
+            selectType.show();
+        } else {
+            selectBhk.hide();
+            selectType.hide();
+        }
+    });
+});
+</script>
+
+
+
+<!-- <script>
 $(document).ready(function() {
     $(document).on("click", ".nice-select.category.areas .option", function() {
         var categoryWiseData = [{
@@ -1353,4 +1573,4 @@ $(document).ready(function() {
         }
     });
 });
-</script>
+</script> -->

@@ -195,7 +195,7 @@ if ( defined( 'JETPACK__VERSION' ) ) {
  *
  */
 
- include get_template_directory() . "/DataFilter/data-filter.php";
+//  include get_template_directory() . "/DataFilter/data-filter.php";
 
 /**
 * #################################################################
@@ -537,7 +537,7 @@ if ( defined( 'JETPACK__VERSION' ) ) {
 				$property_query->the_post();
 				?>
 
-<div class="col-md-6 mb-4" id="propertyList">
+<div class="col-md-4 mb-4" id="propertyList">
     <div class="listing_card">
         <div class="img_box">
             <?php $featured_image = wp_get_attachment_url( get_post_thumbnail_id($post->ID) ); ?>
@@ -570,16 +570,36 @@ if ( defined( 'JETPACK__VERSION' ) ) {
 					}
 				?>
 
+                <?php
+					$button_value = get_field('price_on_request',$post->ID);
+					if($button_value == 'Show'){ ?>
                 <span class="prop_price">
                     ₹ <?php if($min_price_formatted) { echo $min_price_formatted; } ?> -
                     <?php if($max_price_formatted) { echo $max_price_formatted; } ?>
                 </span>
-
-
-                <?php } ?>
+                <?php }elseif($button_value == 'Hide'){?>
+                <span class="prop_price price_btn">Price on request</span>
+                <?php } } ?>
 
             </div>
-            <p class="prop_dev"><?php echo get_field('property_contractor_name',$post->ID);?></p>
+
+            <?php
+			$category_terms = get_the_terms(get_the_ID(), 'property-category'); 
+
+			if ($category_terms && !is_wp_error($category_terms)) {
+				$category_names = wp_list_pluck($category_terms, 'slug');
+
+				if (in_array('land', $category_names)) { ?>
+            <p class="area_size_land" style="color:#000">
+                <?php echo get_field('land_area', get_the_ID()); ?>
+            </p>
+            <?php } else { ?>
+            <p class="prop_dev">
+                <?php echo get_field('property_contractor_name', get_the_ID()); ?>
+            </p>
+            <?php } } ?>
+            <!-- <p class="prop_dev"><?php echo get_field('property_contractor_name',$post->ID);?></p> -->
+
             <?php $poss_date = get_field('possession_date',$post->ID);
 				if($poss_date) { 
 					// $date = DateTime::createFromFormat('d/m/Y', $poss_date);
@@ -597,10 +617,10 @@ if ( defined( 'JETPACK__VERSION' ) ) {
             <?php } ?>
 
 
-            <?php $rera_no = get_field('property_rera_no',$post->ID);
+            <!-- <?php $rera_no = get_field('property_rera_no',$post->ID);
 				if($rera_no){ ?>
             <span class="prop_rera">RERA No.: <?php echo $rera_no; ?></span>
-            <?php } ?>
+            <?php } ?> -->
 
             <div class="details_box">
                 <?php 
@@ -612,13 +632,21 @@ if ( defined( 'JETPACK__VERSION' ) ) {
 					$price = get_sub_field('price');
 				?>
                 <div class="details">
-                    <span><?php echo $capacity;?></span><span><?php echo $size;?></span><span><?php echo $price;?></span>
+                    <span><?php echo $capacity;?></span><span><?php echo $size;?></span>
+                    <?php
+                                $button_value = get_field('price_on_request',$post->ID);
+                                if($button_value == 'Show'){ ?>
+                    <span><?php echo $price;?></span>
+                    <?php }elseif($button_value == 'Hide'){?>
+                    <span>Price on request</span>
+                    <?php } ?>
                 </div>
                 <?php } } ?>
             </div>
             <div class="button_box d-flex">
                 <a href="<?php the_permalink();?>" class="in_btn in_btn_2">View Details</a>
-                <button id="download-brochure" class="in_btn w-auto" data-bs-toggle="modal" data-bs-target="#dnldModal">
+                <button class="in_btn w-auto open-modal" data-bs-toggle="modal" data-bs-target="#dnldModal"
+                    data-title="<?php echo get_the_title(); ?>" data-pdf="<?php echo esc_attr($pdf_url); ?>">
                     Download Brochure
                 </button>
                 <a href="<?php echo get_permalink() . '#side_bar'; ?>" class="in_btn ms-3"><i
@@ -648,7 +676,9 @@ if ( defined( 'JETPACK__VERSION' ) ) {
  
 	 function fetch_propertiesCat() {
 		 $location = sanitize_text_field($_GET['locationCat']);
-		//  $room = sanitize_text_field($_GET['roomCat']);
+		 $room = sanitize_text_field($_GET['roomCat']);
+		 $type = sanitize_text_field($_GET['typeCat']);
+		 $areasize = sanitize_text_field($_GET['areasizeCat']);
 		 $categoryName = sanitize_text_field($_GET['categoryName']);
 		 $status = sanitize_text_field($_GET['statusCat']);
 		 $buyrent = sanitize_text_field($_GET['buyrentCat']);
@@ -686,12 +716,22 @@ if ( defined( 'JETPACK__VERSION' ) ) {
 			);
 		}
 
+		// Property filter by : Area Size (ACF land_area)
+		if (!empty($areasize)) {
+			$args['meta_query'][] = array(
+				'key'     => 'land_area',
+				'value'   => $areasize,
+				'compare' => '<=',
+				'type'    => 'NUMERIC',
+			);
+		}
+
 		// Property filter by : Property Status(ACF property_buyrent)
 		if (!empty($buyrent)) {
 			$args['meta_query'][] = array(
 				'key' => 'property_buyrent',
-				'value' => $buyrent,
-				'compare' => '=',
+				'value' => '"' . $buyrent . '"',
+				'compare' => 'LIKE',
 			);
 		}
  
@@ -705,13 +745,22 @@ if ( defined( 'JETPACK__VERSION' ) ) {
 		 }
  
 		 // Property filter by : Room Capacity (ACF room_capacity)
-		//  if (!empty($room)) {
-		// 	$args['meta_query'][] = array(
-		// 		'key' => 'room_capacity',
-		// 		'value' => '"' . $room . '"',
-		// 		'compare' => 'LIKE',
-		// 	);
-		// }
+		 if (!empty($room)) {
+			$args['meta_query'][] = array(
+				'key' => 'room_capacity',
+				'value' => '"' . $room . '"',
+				'compare' => 'LIKE',
+			);
+		}
+
+		 // Property filter by : Type Specification (ACF type_specification)
+		 if (!empty($type)) {
+			$args['meta_query'][] = array(
+				'key' => 'type_specification',
+				'value' => '"' . $type . '"',
+				'compare' => 'LIKE',
+			);
+		}
  
  
 		 $property_query = new WP_Query($args);
@@ -724,7 +773,7 @@ if ( defined( 'JETPACK__VERSION' ) ) {
 				 $property_query->the_post();
 				 ?>
 
-<div class="col-md-6 mb-4" id="propertyListCat">
+<div class="col-md-4 mb-4" id="propertyListCat">
     <div class="listing_card">
         <div class="img_box">
             <?php $featured_image = wp_get_attachment_url( get_post_thumbnail_id($post->ID) ); ?>
@@ -735,48 +784,68 @@ if ( defined( 'JETPACK__VERSION' ) ) {
                 <span class="prop_name"><?php the_title();?></span>
 
                 <?php
-				 $Price = get_field('property_price', $post->ID);
-				 if ($Price) { 
-					 $min_price = $Price['min_price'];
-					 $max_price = $Price['max_price'];
- 
-					 if ($min_price >= 10000000) {
-						 $min_price_formatted = number_format($min_price / 10000000, 2) . ' cr';
-					 } elseif ($min_price >= 100000) {
-						 $min_price_formatted = number_format($min_price / 100000, 2) . ' lakh';
-					 } elseif($min_price >= 1000) {
-						 $min_price_formatted = number_format($min_price / 1000, 2) . ' K';
-					 }
- 
-					 if ($max_price >= 10000000) {
-						 $max_price_formatted = number_format($max_price / 10000000, 2) . ' cr';
-					 } elseif ($max_price >= 100000) {
-						 $max_price_formatted = number_format($max_price / 100000, 2) . ' lakh';
-					 } elseif($max_price >= 1000) {
-						 $max_price_formatted = number_format($max_price / 1000, 2) . ' K';
-					 }
-				 ?>
+								$Price = get_field('property_price', $post->ID);
+								if ($Price) { 
+									$min_price = $Price['min_price'];
+									$max_price = $Price['max_price'];
+				
+									if ($min_price >= 10000000) {
+										$min_price_formatted = number_format($min_price / 10000000, 2) . ' cr';
+									} elseif ($min_price >= 100000) {
+										$min_price_formatted = number_format($min_price / 100000, 2) . ' lakh';
+									} elseif($min_price >= 1000) {
+										$min_price_formatted = number_format($min_price / 1000, 2) . ' K';
+									}
+				
+									if ($max_price >= 10000000) {
+										$max_price_formatted = number_format($max_price / 10000000, 2) . ' cr';
+									} elseif ($max_price >= 100000) {
+										$max_price_formatted = number_format($max_price / 100000, 2) . ' lakh';
+									} elseif($max_price >= 1000) {
+										$max_price_formatted = number_format($max_price / 1000, 2) . ' K';
+									}
+								?>
 
+                <?php
+					$button_value = get_field('price_on_request',$post->ID);
+					if($button_value == 'Show'){ ?>
                 <span class="prop_price">
                     ₹ <?php if($min_price_formatted) { echo $min_price_formatted; } ?> -
                     <?php if($max_price_formatted) { echo $max_price_formatted; } ?>
                 </span>
-
-
-                <?php } ?>
+                <?php }elseif($button_value == 'Hide'){?>
+                <span class="prop_price price_btn">Price on request</span>
+                <?php } } ?>
 
             </div>
-            <p class="prop_dev"><?php echo get_field('property_contractor_name',$post->ID);?></p>
+
+            <?php
+			$category_terms = get_the_terms(get_the_ID(), 'property-category'); 
+
+			if ($category_terms && !is_wp_error($category_terms)) {
+				$category_names = wp_list_pluck($category_terms, 'slug');
+
+				if (in_array('land', $category_names)) { ?>
+            <p class="area_size_land" style="color:#000">
+                <?php echo get_field('land_area', get_the_ID()); ?>
+            </p>
+            <?php } else { ?>
+            <p class="prop_dev">
+                <?php echo get_field('property_contractor_name', get_the_ID()); ?>
+            </p>
+            <?php } } ?>
+
+            <!-- <p class="prop_dev"><?php echo get_field('property_contractor_name',$post->ID);?></p> -->
             <?php $poss_date = get_field('possession_date',$post->ID);
-				 if($poss_date) { 
-					//  $date = DateTime::createFromFormat('d/m/Y', $poss_date);
-					//  $formatted_date = $date->format('jS F Y');?>
+								if($poss_date) { 
+									//  $date = DateTime::createFromFormat('d/m/Y', $poss_date);
+									//  $formatted_date = $date->format('jS F Y');?>
             <span class="capsule">Possession Date: <?php echo $poss_date;?></span>
             <?php } ?>
             <?php 
-				 $property_map_value = get_field('main_location',$post->ID);
-				 $property_map_address = get_field('property_live_map',$post->ID);
-				 if($property_map_value) { ?>
+								$property_map_value = get_field('main_location',$post->ID);
+								$property_map_address = get_field('property_live_map',$post->ID);
+								if($property_map_value) { ?>
             <p id="location">
                 <i class="fa-solid fa-location-dot me-2"></i><a
                     href="<?php echo $property_map_address;?>"><?php echo $property_map_value;?></a>
@@ -784,28 +853,36 @@ if ( defined( 'JETPACK__VERSION' ) ) {
             <?php } ?>
 
 
-            <?php $rera_no = get_field('property_rera_no',$post->ID);
-				 if($rera_no){ ?>
+            <!-- <?php $rera_no = get_field('property_rera_no',$post->ID);
+								if($rera_no){ ?>
             <span class="prop_rera">RERA No.: <?php echo $rera_no; ?></span>
-            <?php } ?>
+            <?php } ?> -->
 
             <div class="details_box">
                 <?php 
-				 if(have_rows('room_specification',$post->ID)) { 
-					 while(have_rows('room_specification',$post->ID)) { 
-						 the_row(); 
-					 $capacity = get_sub_field('capacity');
-					 $size = get_sub_field('size');
-					 $price = get_sub_field('price');
-				 ?>
+								if(have_rows('room_specification',$post->ID)) { 
+									while(have_rows('room_specification',$post->ID)) { 
+										the_row(); 
+									$capacity = get_sub_field('capacity');
+									$size = get_sub_field('size');
+									$price = get_sub_field('price');
+								?>
                 <div class="details">
-                    <span><?php echo $capacity;?></span><span><?php echo $size;?></span><span><?php echo $price;?></span>
+                    <span><?php echo $capacity;?></span><span><?php echo $size;?></span>
+                    <?php
+                                $button_value = get_field('price_on_request',$post->ID);
+                                if($button_value == 'Show'){ ?>
+                    <span><?php echo $price;?></span>
+                    <?php }elseif($button_value == 'Hide'){?>
+                    <span>Price on request</span>
+                    <?php } ?>
                 </div>
                 <?php } } ?>
             </div>
             <div class="button_box d-flex">
                 <a href="<?php the_permalink();?>" class="in_btn in_btn_2">View Details</a>
-                <button id="download-brochure" class="in_btn w-auto" data-bs-toggle="modal" data-bs-target="#dnldModal">
+                <button class="in_btn w-auto open-modal" data-bs-toggle="modal" data-bs-target="#dnldModal"
+                    data-title="<?php echo get_the_title(); ?>" data-pdf="<?php echo esc_attr($pdf_url); ?>">
                     Download Brochure
                 </button>
                 <a href="<?php echo get_permalink() . '#side_bar'; ?>" class="in_btn ms-3"><i
@@ -888,7 +965,7 @@ if ( defined( 'JETPACK__VERSION' ) ) {
 			while ($query->have_posts()) {
 				$query->the_post();?>
 
-<div class="col-md-6 mb-4" id="propertyList">
+<div class="col-md-4 mb-4" id="propertyList">
     <div class="listing_card">
         <div class="img_box">
             <?php $featured_image = wp_get_attachment_url( get_post_thumbnail_id($post->ID) ); ?>
@@ -920,16 +997,36 @@ if ( defined( 'JETPACK__VERSION' ) ) {
 					$max_price_formatted = number_format($max_price / 1000, 2) . ' K';
 				}
 				?>
+                <?php
+					$button_value = get_field('price_on_request',$post->ID);
+					if($button_value == 'Show'){ ?>
                 <span class="prop_price">
                     ₹ <?php if($min_price_formatted) { echo $min_price_formatted; } ?> -
                     <?php if($max_price_formatted) { echo $max_price_formatted; } ?>
                 </span>
-                <!-- <span class="prop_price">₹56 lakh - 95 lakh</span> -->
-
-                <?php } ?>
+                <?php }elseif($button_value == 'Hide'){?>
+                <span class="prop_price price_btn">Price on request</span>
+                <?php } } ?>
 
             </div>
-            <p class="prop_dev"><?php echo get_field('property_contractor_name',$post->ID);?></p>
+
+            <?php
+			$category_terms = get_the_terms(get_the_ID(), 'property-category'); 
+
+			if ($category_terms && !is_wp_error($category_terms)) {
+				$category_names = wp_list_pluck($category_terms, 'slug');
+
+				if (in_array('land', $category_names)) { ?>
+            <p class="area_size_land" style="color:#000">
+                <?php echo get_field('land_area', get_the_ID()); ?>
+            </p>
+            <?php } else { ?>
+            <p class="prop_dev">
+                <?php echo get_field('property_contractor_name', get_the_ID()); ?>
+            </p>
+            <?php } } ?>
+
+            <!-- <p class="prop_dev"><?php echo get_field('property_contractor_name',$post->ID);?></p> -->
             <?php $poss_date = get_field('possession_date',$post->ID);
 				if($poss_date) { 
 					// $date = DateTime::createFromFormat('d/m/Y', $poss_date);
@@ -945,10 +1042,10 @@ if ( defined( 'JETPACK__VERSION' ) ) {
                     href="<?php echo $property_map_address;?>"><?php echo $property_map_value;?></a>
             </p>
             <?php } ?>
-            <?php $rera_no = get_field('property_rera_no',$post->ID);
+            <!-- <?php $rera_no = get_field('property_rera_no',$post->ID);
 				if($rera_no){ ?>
             <span class="prop_rera">RERA No.: <?php echo $rera_no; ?></span>
-            <?php } ?>
+            <?php } ?> -->
             <div class="details_box">
                 <?php 
 					if(have_rows('room_specification',$post->ID)) { 
@@ -959,13 +1056,21 @@ if ( defined( 'JETPACK__VERSION' ) ) {
 						$price = get_sub_field('price');
 					?>
                 <div class="details">
-                    <span><?php echo $capacity;?></span><span><?php echo $size;?></span><span><?php echo $price;?></span>
+                    <span><?php echo $capacity;?></span><span><?php echo $size;?></span>
+                    <?php
+                                $button_value = get_field('price_on_request',$post->ID);
+                                if($button_value == 'Show'){ ?>
+                    <span><?php echo $price;?></span>
+                    <?php }elseif($button_value == 'Hide'){?>
+                    <span>Price on request</span>
+                    <?php } ?>
                 </div>
                 <?php } } ?>
             </div>
             <div class="button_box d-flex">
                 <a href="<?php the_permalink();?>" class="in_btn in_btn_2">View Details</a>
-                <button id="download-brochure" class="in_btn w-auto" data-bs-toggle="modal" data-bs-target="#dnldModal">
+                <button class="in_btn w-auto open-modal" data-bs-toggle="modal" data-bs-target="#dnldModal"
+                    data-title="<?php echo get_the_title(); ?>" data-pdf="<?php echo esc_attr($pdf_url); ?>">
                     Download Brochure
                 </button>
                 <a href="<?php echo get_permalink() . '#side_bar'; ?>" class="in_btn ms-3"><i
@@ -1053,7 +1158,7 @@ add_action('wp_enqueue_scripts', 'custom_inline_script');
 * #################################################################
 */
 	function add_post_title_to_cf7( $html ) {
-		if ( is_single() ) {
+		if ( is_single() || is_page() ) {
 			$post_title = get_the_title();
 			$post_id = get_the_ID(); 
 			$new_element = '
@@ -1271,3 +1376,43 @@ add_action( 'init', 'create_partners_post_type' );
 
 	add_action('wp_ajax_property_name_suggestions', 'property_name_suggestions');
 	add_action('wp_ajax_nopriv_property_name_suggestions', 'property_name_suggestions');
+
+
+
+
+/**
+* #################################################################
+*		Start Session for getting ID value in thankyou page
+* #################################################################
+*/
+	function start_session() {
+		if (!session_id()) {
+			session_start();
+		}
+	}
+	add_action('init', 'start_session');
+
+/**
+* #################################################################
+*	Store data in Session for getting form value in thankyou page
+* #################################################################
+*/
+	add_action('wpcf7_mail_sent', function ($contact_form) {
+		session_start();
+
+		if ($contact_form->id() == 591) {
+			$submission = WPCF7_Submission::get_instance();
+			if ($submission) {
+				$posted_data = $submission->get_posted_data();
+	
+				$_SESSION['form_data'] = [
+					'name'    => isset($posted_data['flname']) ? sanitize_text_field($posted_data['flname']) : '',
+					'email'   => isset($posted_data['email']) ? sanitize_email($posted_data['email']) : '',
+					'phone'   => isset($posted_data['number']) ? sanitize_text_field($posted_data['number']) : '',
+					];
+			}
+		}
+	});
+	
+
+	

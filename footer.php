@@ -213,7 +213,7 @@
 <?php if(is_front_page()) {?>
 <div class="section-top_footer">
     <div class="container">
-        <h2 class="section_title__heading">GET IN TOUCH</h2>
+        <h2 class="section_title__heading">GET IN TOUCH <span class="frm_close"><i class="fa-solid fa-xmark"></i></span></h2>
         <?php echo do_shortcode('[contact-form-7 id="2e9880d" title="Footer Sticky Form"]');?>
     </div>
 </div>
@@ -314,6 +314,9 @@ jQuery(document).ready(function($) {
         }
     });
 });
+
+
+
 </script>
 
 
