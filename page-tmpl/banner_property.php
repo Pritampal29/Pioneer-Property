@@ -181,7 +181,7 @@ get_header();
                     }
                     $featured_image = wp_get_attachment_url(get_post_thumbnail_id(get_the_ID()));
             ?>
-            <div class="col-md-6 mb-4 gallery-item <?php echo esc_attr(trim($category_classes)); ?>">
+            <div class="col-md-4 mb-4 gallery-item <?php echo esc_attr(trim($category_classes)); ?>">
                 <div class="listing_card">
                     <div class="img_box">
                         <?php $featured_image = wp_get_attachment_url( get_post_thumbnail_id($post->ID) ); ?>
@@ -224,16 +224,36 @@ get_header();
                                             $max_price_formatted = number_format($max_price / 1000, 2) . ' K';
                                         }
                                         ?>
+                            <?php
+                                $button_value = get_field('price_on_request',$post->ID);
+                                if($button_value == 'Show'){ ?>
                             <span class="prop_price">
                                 ₹ <?php if($min_price_formatted) { echo $min_price_formatted; } ?> -
                                 <?php if($max_price_formatted) { echo $max_price_formatted; } ?>
                             </span>
-
-                            <?php } ?>
+                            <?php }elseif($button_value == 'Hide'){?>
+                            <span class="prop_price price_btn">Price on request</span>
+                            <?php } } ?>
                         </div>
-                        <p class="prop_dev"><?php echo get_field('property_contractor_name',$post->ID);?></p>
+
+                        <?php
+                        $category_terms = get_the_terms(get_the_ID(), 'property-category'); 
+
+                        if ($category_terms && !is_wp_error($category_terms)) {
+                            $category_names = wp_list_pluck($category_terms, 'slug');
+
+                            if (in_array('land', $category_names)) { ?>
+                        <p class="area_size_land" style="color:#000">
+                            <?php echo get_field('land_area', get_the_ID()); ?>
+                        </p>
+                        <?php } else { ?>
+                        <p class="prop_dev">
+                            <?php echo get_field('property_contractor_name', get_the_ID()); ?>
+                        </p>
+                        <?php } } ?>
+
                         <?php $poss_date = get_field_object('possession_date',$post->ID);
-                            if($poss_date) { ?>
+                            if(get_field('possession_date',$post->ID)) { ?>
                         <span class="capsule"><?php echo $poss_date['label'];?>:
                             <?php echo $poss_date['value'];?></span>
                         <?php } ?>
@@ -248,10 +268,10 @@ get_header();
                         </p>
                         <?php } ?>
 
-                        <?php $rera_no = get_field('property_rera_no',$post->ID);
+                        <!-- <?php $rera_no = get_field('property_rera_no',$post->ID);
                                 if($rera_no){ ?>
                         <span class="prop_rera">RERA No.: <?php echo $rera_no; ?></span>
-                        <?php } ?>
+                        <?php } ?> -->
                         <div class="details_box">
 
                             <?php 
@@ -263,7 +283,14 @@ get_header();
                                     $price = get_sub_field('price');
                                 ?>
                             <div class="details">
-                                <span><?php echo $capacity;?></span><span><?php echo $size;?></span><span><?php echo $price;?></span>
+                                <span><?php echo $capacity;?></span><span><?php echo $size;?></span>
+                                <?php
+                                $button_value = get_field('price_on_request',$post->ID);
+                                if($button_value == 'Show'){ ?>
+                                <span><?php echo $price;?></span>
+                                <?php }elseif($button_value == 'Hide'){?>
+                                <span>Price on request</span>
+                                <?php } ?>
                             </div>
                             <?php } } ?>
                         </div>
@@ -481,7 +508,9 @@ get_header();
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalTitle">Download Brochure</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-regular fa-circle-xmark"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="enquiry-form">
@@ -499,22 +528,21 @@ jQuery(document).ready(function() {
         var propertyPdf = $(this).data("pdf");
 
         $("#dnldModal #modalTitle").text("Download Brochure for " + propertyTitle);
+
+        $("#dnldModal").attr("data-pdf-url", propertyPdf);
     });
 });
 
 document.addEventListener('wpcf7mailsent', function(event) {
     if (event.detail.contactFormId == '859') {
-        var modal = $("#dnldModal");
-        var pdfUrl = modal.data("pdf-url");
-        alert(pdfUrl);
+        var pdfUrl = $("#dnldModal").attr("data-pdf-url");
+
         if (pdfUrl) {
             window.open(pdfUrl, '_blank');
         }
     }
 }, false);
 </script>
-
-
 
 
 

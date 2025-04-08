@@ -32,8 +32,7 @@
                                     } 
                                 } ?>
                          </div>
-                         <!-- <div class="swiper-button-next sl_btn"></div>
-                            <div class="swiper-button-prev sl_btn"></div> -->
+
                      </div>
 
                      <div thumbsSlider="" class="swiper mySwiper">
@@ -321,8 +320,7 @@
 
                              <!---------- Floor-Plan Section ---------->
                              <div class="pdb feature" id="floor_Plans">
-                                 <h6 class="top"><?php echo get_field('floor_plan_heading', $post->ID); ?>
-                                 </h6>
+                                 <h6 class="top"><?php echo get_field('floor_plan_heading', $post->ID); ?></h6>
                                  <?php if (have_rows('floor_plans_repeater', $post->ID)) { ?>
                                  <div class="section floor-plans">
                                      <nav class="mb-4">
@@ -350,7 +348,8 @@
                                              id="floor_plan<?php echo $j; ?>" role="tabpanel"
                                              aria-labelledby="first-tab" tabindex="0">
 
-                                             <div class="row" id="withLogin" style="display: none;">
+
+                                             <div class="row " id="withLogin" style="display:none">
                                                  <?php if ($fpimages) { 
                                                     foreach ($fpimages as $image) { ?>
                                                  <div class="col-md-3 col-6 mb-3">
@@ -361,7 +360,7 @@
                                                          </a>
                                                      </div>
                                                  </div>
-                                                 <?php } } ?>
+                                                 <?php }  ?>
                                              </div>
 
                                              <div class="row" id="withOutLogin">
@@ -384,6 +383,7 @@
 
                                                  <?php } } ?>
                                              </div>
+                                             <?php } ?>
                                          </div>
                                          <?php $j++; } ?>
                                      </div>
@@ -489,16 +489,12 @@
                                          aria-labelledby="pills-profile-tab">
                                          <div class="section gallery">
                                              <?php
-                                                $proj_vid = get_field('project_videos',$post->ID);
-                                                if($proj_vid) {
-                                                    foreach($proj_vid as $vid_gal){ ?>
+                                             if(have_rows('project_videos',$post->ID)) {
+                                                while(have_rows('project_videos',$post->ID)) {
+                                                    the_row(); ?>
                                              <div class="card">
                                                  <div class="card-image">
-                                                     <a href="<?php echo $vid_gal;?>" data-fancybox="gallery2">
-                                                         <video autoplay muted loop>
-                                                             <source src="<?php echo $vid_gal;?>" type="video/mp4">
-                                                         </video>
-                                                     </a>
+                                                     <?php echo get_sub_field('video_iframe',$post->ID);?>
                                                  </div>
                                              </div>
                                              <?php } } ?>
@@ -669,12 +665,17 @@
                                                  <?php } ?>
 
                                              </h6>
+
                                              <h6>
                                                  <?php 
-                                                        $room_tag = get_field('room_capacity');
-                                                        if ($room_tag) { ?>
+                                                    $room_tag = get_field('room_capacity');
+                                                    $type_tag = get_field('type_specification');
+                                                    if ($room_tag) { ?>
                                                  <i class="fa-solid fa-city"></i><span>
                                                      <?php echo implode(', ', $room_tag); ?></span>
+                                                 <?php }elseif($type_tag) {?>
+                                                 <i class="fa-solid fa-city"></i><span>
+                                                     <?php echo implode(', ', $type_tag); ?></span>
                                                  <?php } ?>
                                              </h6>
                                          </div>
@@ -691,87 +692,6 @@
      </div>
  </section>
  <!-- Trending section end -->
-
-
-
- <!-- emi modal start -->
- <div class="modal fade" id="emiModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-     <div class="modal-dialog modal-xl">
-         <div class="modal-content">
-             <div class="modal-header">
-                 <h5 class="modal-title" id="exampleModalLabel">EMI Calculator</h5>
-                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-             </div>
-             <div class="modal-body">
-                 <div class="calculator">
-                     <div class="row">
-                         <div class="col-md-8">
-                             <div id="loan-form">
-                                 <div class="form-group">
-                                     <div class="box">
-                                         <label for="loan-amount"> Home Loan Amount </label>
-                                         <div class="right">
-                                             <p>₹</p>
-                                             <input type="text" id="loan-amount-value" value="100000" />
-                                         </div>
-                                     </div>
-                                     <input type="range" id="loan-amount" min="100000" max="20000000" step="10000"
-                                         value="500000" />
-                                 </div>
-                                 <div class="form-group">
-                                     <div class="box">
-                                         <label for="loan-term"> Loan Tenure </label>
-                                         <div class="right">
-                                             <div class="tenure-switch">
-                                                 <input type="radio" id="tenure-years" name="tenure-type" value="Years"
-                                                     checked />
-                                                 <label for="tenure-years">Yr</label>
-                                                 <input type="radio" id="tenure-months" name="tenure-type"
-                                                     value="Months" />
-                                                 <label for="tenure-months">Mo</label>
-                                             </div>
-                                             <input type="text" id="loan-term-value" value="19" />
-                                         </div>
-                                     </div>
-
-                                     <input type="range" id="loan-term" min="1" max="30" step="1" value="20" />
-                                 </div>
-                                 <div class="form-group">
-                                     <div class="box">
-                                         <label for="interest-rate"> Interest Rate </label>
-                                         <div class="right">
-                                             <p>%</p>
-                                             <input type="text" id="interest-rate-value" value="" />
-                                         </div>
-                                     </div>
-                                     <input type="range" id="interest-rate" min="1" max="20" step="0.1" value="7" />
-                                 </div>
-                             </div>
-                         </div>
-                         <div class="col-md-4">
-                             <div id="results" class="results">
-                                 <h2>Detailed Calculations</h2>
-                                 <div class="calculation-item">
-                                     <div class="label">EMI per Month</div>
-                                     <div class="value" id="emi"></div>
-                                 </div>
-                                 <div class="calculation-item">
-                                     <div class="label">Total Interest Payable</div>
-                                     <div class="value" id="total-interest"></div>
-                                 </div>
-                                 <div class="calculation-item">
-                                     <div class="label">Total Amount Payable</div>
-                                     <div class="value" id="total-amount"></div>
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-         </div>
-     </div>
- </div>
- <!-- emi modal end -->
 
 
  <!-- Book Visit Form Modal -->
@@ -831,7 +751,7 @@
 
  </main>
 
- <script>
+ <!-- <script>
 jQuery(document).ready(function($) {
     document.addEventListener('wpcf7mailsent', function(event) {
         if (event.detail.contactFormId == '1300') {
@@ -840,6 +760,30 @@ jQuery(document).ready(function($) {
                 $(this).find('#withOutLogin').hide();
                 $(this).find('#withLogin').show();
             });
+        }
+    });
+});
+ </script> -->
+
+ <script>
+var isUserLoggedIn = <?php echo is_user_logged_in() ? 'true' : 'false'; ?>;
+
+jQuery(document).ready(function($) {
+    function showFloorPlanSection() {
+        $('.tab-content .tab-pane').each(function() {
+            $(this).find('#withOutLogin').hide();
+            $(this).find('#withLogin').show();
+        });
+    }
+
+    if (isUserLoggedIn) {
+        showFloorPlanSection();
+    }
+
+    document.addEventListener('wpcf7mailsent', function(event) {
+        if (event.detail.contactFormId == '1300') {
+            $('.floorPlan').click();
+            showFloorPlanSection();
         }
     });
 });

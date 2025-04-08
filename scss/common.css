@@ -47,8 +47,8 @@ body {
   /* font-family: "Roboto", sans-serif; */
 
   /* font-family: "Poppins", sans-serif; */
-  font-family:'Gotham Rounded Book';
-  
+  font-family: 'Gotham Rounded Book';
+
 
   color: #4c4d56;
 
@@ -333,9 +333,7 @@ textarea:-ms-input-placeholder {
 
 }
 
-.swiper-pagination
-
-  .swiper-pagination-bullet.swiper-pagination-bullet-active::after {
+.swiper-pagination .swiper-pagination-bullet.swiper-pagination-bullet-active::after {
 
   transform: scale(1);
 
@@ -355,7 +353,7 @@ label {
 
 }
 
-.wpcf7-list-item-label{
+.wpcf7-list-item-label {
 
   text-transform: none;
 
@@ -365,11 +363,7 @@ label {
 
 
 
-input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not(
-
-    [type="file"]
-
-  ) {
+input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]) {
 
   border: 1px solid #ebebeb;
 
@@ -399,11 +393,7 @@ input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not(
 
 }
 
-input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not(
-
-    [type="file"]
-
-  ):focus {
+input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus {
 
   outline: none;
 
@@ -411,11 +401,7 @@ input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not(
 
 }
 
-input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not(
-
-    [type="file"]
-
-  )::-webkit-input-placeholder {
+input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not([type="file"])::-webkit-input-placeholder {
 
   font-size: 11px;
 
@@ -425,11 +411,7 @@ input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not(
 
 }
 
-input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not(
-
-    [type="file"]
-
-  ):-moz-placeholder {
+input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):-moz-placeholder {
 
   font-size: 11px;
 
@@ -439,11 +421,7 @@ input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not(
 
 }
 
-input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not(
-
-    [type="file"]
-
-  )::-moz-placeholder {
+input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not([type="file"])::-moz-placeholder {
 
   font-size: 11px;
 
@@ -453,11 +431,7 @@ input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not(
 
 }
 
-input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not(
-
-    [type="file"]
-
-  ):-ms-input-placeholder {
+input:not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):-ms-input-placeholder {
 
   font-size: 11px;
 
@@ -1279,3 +1253,39 @@ button.wpcf7-submit.in_btn {
 
 }
 
+/*indrajit 21/02/2025*/
+.offer_box._in {
+  position: absolute;
+  z-index: 9;
+  top: 10px;
+  left: 25px;
+}
+
+.offer_box._in .offer {
+  border-radius: 3px;
+  color: #fff;
+  font-size: 14px;
+  padding: 6px 13px;
+  text-transform: none;
+  background-color: #bb2026;
+  transition: 0.3s all;
+  -webkit-transition: 0.3s all;
+}
+
+.btn.tab_btn_pr {
+  border: 1px solid #bb2026;
+}
+
+.btn.tab_btn_pr:focus {
+  outline: 0;
+  box-shadow: none;
+}
+
+.btn.tab_btn_pr:hover {
+  background-color: #bb2026;
+  color: #fff;
+}
+.btn.tab_btn_pr.active {
+  background-color: #bb2026;
+  color: #fff;
+}

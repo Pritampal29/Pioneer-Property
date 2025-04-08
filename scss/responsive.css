@@ -132,7 +132,7 @@
   }
   /*====== tanmoy 04-02-2025 =========*/
   .filter_li_home .slider_box{
-    width: 637px;
+    width: 497px;
   }
 
 }
@@ -826,7 +826,12 @@
   }
   /*====== tanmoy 04-02-2025 =========*/
   .filter_li_home .slider_box{
-    width: 533px;
+    width: 417px;
+  }
+  /*====== tanmoy 26-02-2025 =========*/
+  #advSearchBtnCat{
+    height: 42px !important;
+    margin-top: 8px !important;
   }
    
 
@@ -1945,7 +1950,7 @@
     padding: 0;
   }
   .searchIcn {
-    margin-right: 0 !important;
+    margin-right: 5px !important;
   }
   .header-logo a img {
     width: 90px;
@@ -1977,6 +1982,23 @@
   opacity: 1;
   visibility: visible;
 }
+/*====== tanmoy 26-02-2025 =========*/
+#areasizeCat{
+  height: 35px;
+}
+#advSearchBtnCat {
+  height: 35px !important;
+  margin-top: 8px !important;
+}
+.section-top_footer_show .wpcf7-form{
+  display: none;
+}
+/*====== tanmoy 19-03-2025 =========*/
+  .category-report .blog_card,
+  .category-journal .blog_card,
+  .category-blog .blog_card{
+    height: auto !important;
+  }
 
 }
 

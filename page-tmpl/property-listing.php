@@ -94,9 +94,9 @@ global $post;
                                 <div class="slider_box">
                                     <div class="form-group">
                                         <label for="loan-amount">Amount (INR): <span
-                                                id="loan-amount-value">1Cr</span></label>
-                                        <input type="range" id="loan-amount" name="min_budget" min="1000000"
-                                            max="100000000" step="500000" value="100000000" />
+                                                id="loan-amount-value">50Cr</span></label>
+                                        <input type="range" id="loan-amount" name="min_budget" min="1500000"
+                                            max="500000000" step="500000" value="500000000" />
                                         <input type="hidden" id="min-budget" name="min_budget" value="100000" />
                                     </div>
                                 </div>
@@ -315,11 +315,12 @@ global $post;
 
             <?php 
 
-            if (isset($_GET['location']) && isset($_GET['category']) && isset($_GET['max_budget']) && isset($_GET['roomCat'])) { 
+            if (isset($_GET['location']) && isset($_GET['category']) && isset($_GET['max_budget']) && isset($_GET['roomCat']) && isset($_GET['typeCat'])) { 
                 $prop_location = sanitize_text_field($_GET['location']);
                 $prop_category = sanitize_text_field($_GET['category']);
                 // $prop_name = sanitize_text_field($_GET['prop_name']);
                 $room_bhk = sanitize_text_field($_GET['roomCat']);
+                $type_sp = sanitize_text_field($_GET['typeCat']);
     	        $max_budget = sanitize_text_field($_GET['max_budget']);
                 ?>
 
@@ -334,7 +335,7 @@ global $post;
 
                     if (!empty($max_budget)) {
                         $args['meta_query'][] = array(
-                            'key' => 'property_price_max_price',
+                            'key' => 'property_price_min_price',
                             'value' => $max_budget,
                             'compare' => '<=',
                             'type' => 'NUMERIC',
@@ -353,6 +354,14 @@ global $post;
                         $args['meta_query'][] = array(
                             'key' => 'room_capacity',
                             'value' => '"' . $room_bhk . '"',
+                            'compare' => 'LIKE',
+                        );
+                    }
+
+                    if (!empty($type_sp)) {
+                        $args['meta_query'][] = array(
+                            'key' => 'type_specification',
+                            'value' => '"' . $type_sp . '"',
                             'compare' => 'LIKE',
                         );
                     }
@@ -377,7 +386,7 @@ global $post;
                             $property_query->the_post();
                             ?>
 
-                <div class="col-md-6 mb-4">
+                <div class="col-md-4 mb-4">
                     <div class="listing_card">
                         <div class="img_box">
                             <?php $featured_image = wp_get_attachment_url( get_post_thumbnail_id($post->ID) ); ?>
@@ -399,6 +408,7 @@ global $post;
                         <div class="cont_box">
                             <div class="top">
                                 <span class="prop_name"><?php the_title();?></span>
+
                                 <?php
                                     $Price = get_field('property_price', $post->ID);
                                     if ($Price) { 
@@ -421,13 +431,37 @@ global $post;
                                             $max_price_formatted = number_format($max_price / 1000, 2) . ' K';
                                         }
                                         ?>
+                                <?php
+                                $button_value = get_field('price_on_request',$post->ID);
+                                if($button_value == 'Show'){ ?>
                                 <span class="prop_price">
                                     ₹ <?php if($min_price_formatted) { echo $min_price_formatted; } ?> -
                                     <?php if($max_price_formatted) { echo $max_price_formatted; } ?>
                                 </span>
-                                <?php } ?>
+                                <?php }elseif($button_value == 'Hide'){?>
+                                <span class="prop_price price_btn">Price on request</span>
+                                <?php } } ?>
+
                             </div>
-                            <p class="prop_dev"><?php echo get_field('property_contractor_name',$post->ID);?></p>
+
+                            <?php
+                            $category_terms = get_the_terms(get_the_ID(), 'property-category'); 
+
+                            if ($category_terms && !is_wp_error($category_terms)) {
+                                $category_names = wp_list_pluck($category_terms, 'slug');
+
+                                if (in_array('land', $category_names)) { ?>
+                            <p class="area_size_land" style="color:#000">
+                                <?php echo get_field('land_area', get_the_ID()); ?>
+                            </p>
+                            <?php } else { ?>
+                            <p class="prop_dev">
+                                <?php echo get_field('property_contractor_name', get_the_ID()); ?>
+                            </p>
+                            <?php } } ?>
+
+                            <!-- <p class="prop_dev"><?php echo get_field('property_contractor_name',$post->ID);?></p> -->
+
                             <?php $poss_date = get_field('possession_date',$post->ID);
                             if($poss_date) { 
                                 // $date = DateTime::createFromFormat('d/m/Y', $poss_date);
@@ -445,10 +479,10 @@ global $post;
                             </p>
                             <?php } ?>
 
-                            <?php $rera_no = get_field('property_rera_no',$post->ID);
+                            <!-- <?php $rera_no = get_field('property_rera_no',$post->ID);
                                 if($rera_no){ ?>
                             <span class="prop_rera">RERA No.: <?php echo $rera_no; ?></span>
-                            <?php } ?>
+                            <?php } ?> -->
 
                             <div class="details_box">
                                 <?php 
@@ -460,17 +494,26 @@ global $post;
                                     $price = get_sub_field('price');
                                 ?>
                                 <div class="details">
-                                    <span><?php echo $capacity;?></span><span><?php echo $size;?></span><span><?php echo $price;?></span>
+                                    <span><?php echo $capacity;?></span><span><?php echo $size;?></span>
+                                    <?php
+                                $button_value = get_field('price_on_request',$post->ID);
+                                if($button_value == 'Show'){ ?>
+                                    <span><?php echo $price;?></span>
+                                    <?php }elseif($button_value == 'Hide'){?>
+                                    <span>Price on request</span>
+                                    <?php } ?>
                                 </div>
                                 <?php } } ?>
                             </div>
                             <div class="button_box d-flex">
                                 <a href="<?php the_permalink();?>" class="in_btn in_btn_2">View Details</a>
-                                <button id="download-brochure" class="in_btn w-auto" data-bs-toggle="modal"
-                                    data-bs-target="#dnldModal">
+                                <button class="in_btn w-auto open-modal" data-bs-toggle="modal"
+                                    data-bs-target="#dnldModal" data-title="<?php echo get_the_title(); ?>"
+                                    data-pdf="<?php echo esc_attr($pdf_url); ?>">
                                     Download Brochure
                                 </button>
-                                <a href="<?php echo get_permalink() . '#side_bar'; ?>" class="in_btn"><i class="fa-solid fa-phone"></i>Get Call Back</a>
+                                <a href="<?php echo get_permalink() . '#side_bar'; ?>" class="in_btn"><i
+                                        class="fa-solid fa-phone"></i>Get Call Back</a>
                             </div>
                         </div>
                     </div>
@@ -498,7 +541,7 @@ global $post;
                 if ($Property->have_posts()) {
                     while ($Property->have_posts()) {
                         $Property->the_post(); ?>
-                <div class="col-md-6 mb-4" id="propertyList">
+                <div class="col-md-4 mb-4" id="propertyList">
                     <div class="listing_card">
 
                         <!-- Property Image start -->
@@ -539,23 +582,45 @@ global $post;
                                             $max_price_formatted = number_format($max_price / 1000, 2) . ' K';
                                         }
                                         ?>
+                                <?php
+                                $button_value = get_field('price_on_request',$post->ID);
+                                if($button_value == 'Show'){ ?>
                                 <span class="prop_price">
                                     ₹ <?php if($min_price_formatted) { echo $min_price_formatted; } ?> -
                                     <?php if($max_price_formatted) { echo $max_price_formatted; } ?>
                                 </span>
-                                <?php } ?>
+                                <?php }elseif($button_value == 'Hide'){?>
+                                <span class="prop_price price_btn">Price on request</span>
+                                <?php } } ?>
                             </div>
                             <!-- Property Price end -->
 
 
+                            <?php
+                            $category_terms = get_the_terms(get_the_ID(), 'property-category'); 
+
+                            if ($category_terms && !is_wp_error($category_terms)) {
+                                $category_names = wp_list_pluck($category_terms, 'slug');
+
+                                if (in_array('land', $category_names)) { ?>
+                            <p class="area_size_land" style="color:#000">
+                                <?php echo get_field('land_area', get_the_ID()); ?>
+                            </p>
+                            <?php } else { ?>
+                            <p class="prop_dev">
+                                <?php echo get_field('property_contractor_name', get_the_ID()); ?>
+                            </p>
+                            <?php } } ?>
+
+
                             <!-- Property Developer Name start -->
-                            <p class="prop_dev"><?php echo get_field('property_contractor_name',$post->ID);?></p>
+                            <!-- <p class="prop_dev"><?php echo get_field('property_contractor_name',$post->ID);?></p> -->
                             <!-- Property Developer Name end -->
 
 
                             <!-- Possession Date start -->
                             <?php $poss_date = get_field_object('possession_date',$post->ID);
-                            if($poss_date) { 
+                            if(get_field('possession_date',$post->ID)) { 
                                 // $date = DateTime::createFromFormat('d/m/Y', $poss_date['value']);
                                 // $formatted_date = $date->format('jS F Y');?>
                             <span class="capsule"><?php echo $poss_date['label'];?>:
@@ -578,10 +643,10 @@ global $post;
 
 
                             <!-- Rera Details start -->
-                            <?php $rera_no = get_field('property_rera_no',$post->ID);
+                            <!-- <?php $rera_no = get_field('property_rera_no',$post->ID);
                                 if($rera_no){ ?>
                             <span class="prop_rera">RERA No.: <?php echo $rera_no; ?></span>
-                            <?php } ?>
+                            <?php } ?> -->
                             <!-- Rera Details end -->
 
 
@@ -596,7 +661,14 @@ global $post;
                                     $price = get_sub_field('price');
                                 ?>
                                 <div class="details">
-                                    <span><?php echo $capacity;?></span><span><?php echo $size;?></span><span><?php echo $price;?></span>
+                                    <span><?php echo $capacity;?></span><span><?php echo $size;?></span>
+                                    <?php
+                                $button_value = get_field('price_on_request',$post->ID);
+                                if($button_value == 'Show'){ ?>
+                                    <span><?php echo $price;?></span>
+                                    <?php }elseif($button_value == 'Hide'){?>
+                                    <span>Price on request</span>
+                                    <?php } ?>
                                 </div>
                                 <?php } } ?>
                             </div>
@@ -606,11 +678,14 @@ global $post;
                             <!-- Below Buttons start -->
                             <div class="button_box d-flex">
                                 <a href="<?php the_permalink();?>" class="in_btn in_btn_2">View Details</a>
-                                <button id="download-brochure" class="in_btn w-auto" data-bs-toggle="modal"
-                                    data-bs-target="#dnldModal">
+                                <?php $pdf_url = get_field('download_brochure_pdf',$post->ID); ?>
+                                <button class="in_btn w-auto open-modal" data-bs-toggle="modal"
+                                    data-bs-target="#dnldModal" data-title="<?php echo get_the_title(); ?>"
+                                    data-pdf="<?php echo esc_attr($pdf_url); ?>">
                                     Download Brochure
                                 </button>
-                                <a href="<?php echo get_permalink() . '#side_bar'; ?>" class="in_btn"><i class="fa-solid fa-phone"></i>Get Call Back</a>
+                                <a href="<?php echo get_permalink() . '#side_bar'; ?>" class="in_btn"><i
+                                        class="fa-solid fa-phone"></i>Get Call Back</a>
                             </div>
                             <!-- Below Buttons end -->
                         </div>
@@ -650,8 +725,10 @@ global $post;
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Download Brochure</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="modalTitle">Download Brochure</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-regular fa-circle-xmark"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="enquiry-form">
@@ -664,68 +741,28 @@ global $post;
 
 
 
-<!-- Single Card Property -->
+<script>
+jQuery(document).ready(function() {
+    $(".open-modal").click(function() {
+        var propertyTitle = $(this).data("title");
+        var propertyPdf = $(this).data("pdf");
 
-<!-- <div class="col-md-6">
+        $("#dnldModal #modalTitle").text("Download Brochure for " + propertyTitle);
 
-    <div class="listing_card">
+        $("#dnldModal").attr("data-pdf-url", propertyPdf);
+    });
+});
 
-        <div class="img_box">
+document.addEventListener('wpcf7mailsent', function(event) {
+    if (event.detail.contactFormId == '859') {
+        var pdfUrl = $("#dnldModal").attr("data-pdf-url");
 
-            <img src="./images//list_2.png" alt="" />
-
-            <span class="featured">Featured</span>
-
-            <span class="sales">Sales</span>
-
-        </div>
-
-        <div class="cont_box">
-
-            <div class="top">
-
-                <span class="prop_name">One Victoria</span>
-
-                <span class="prop_price">₹56 lakh - 95 lakh</span>
-
-            </div>
-
-            <p>New Town, Kolkata</p>
-
-            <span class="capsule">Possession starts from: Jul'28</span>
-
-            <div class="details_box">
-
-                <div class="details">
-
-                    <span>3BHK + 3T</span><span>2366 sqft</span><span>₹56 lakh</span>
-
-                </div>
-
-                <div class="details">
-
-                    <span>3BHK + 3T</span><span>2366 sqft</span><span>₹56 lakh</span>
-
-                </div>
-
-            </div>
-
-            <div class="button_box d-flex">
-
-                <button class="in_btn">get call back</button>
-
-                <button class="in_btn in_btn_2 ms-3">view details</button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div> -->
-
-<!-- Single Card Property -->
-
+        if (pdfUrl) {
+            window.open(pdfUrl, '_blank');
+        }
+    }
+}, false);
+</script>
 
 
 <script>

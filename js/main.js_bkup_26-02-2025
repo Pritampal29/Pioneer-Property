@@ -118,20 +118,6 @@ $(window).scroll(function() {
   }
 });
 
-$(document).ready(function () {
-  $(".section-top_footer .section_title__heading").on("click", function () {
-    $(".section-top_footer .wpcf7-form").addClass("frm_show");
-    $(".frm_close").addClass("frm_close_show");
-    $(".section_title__heading").addClass("add_padd");
-  });
-});
-$(document).ready(function () {
-  $(document).on("click", ".frm_close", function () {
-    $(".section-top_footer_show .wpcf7-form").removeClass("frm_show");
-    $(".frm_close").removeClass("frm_close_show");
-    $(".section-top_footer .section_title__heading").removeClass("add_padd");
-  });
-});
 
 /* Slide Down */
 
@@ -502,7 +488,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 var swiper = new Swiper(".mySwiper_hero", {
-  autoplay: { delay: 4000 },
+  autoplay: { delay: 6000 },
 
   loop: true,
 
@@ -514,7 +500,6 @@ var swiper = new Swiper(".mySwiper_hero", {
   navigation:false,
   pagination: {
     el: ".swiper-pagination",
-    clickable: true,
   },
 });
 
@@ -950,7 +935,7 @@ var swiper = new Swiper(".partner_dev .blog_slider", {
   },
 
   breakpoints: {
-    310: {
+    320: {
       slidesPerView: 2,
 
       spaceBetween: 10,
@@ -959,10 +944,10 @@ var swiper = new Swiper(".partner_dev .blog_slider", {
     768: {
       slidesPerView: 4,
 
-      spaceBetween: 15,
+      spaceBetween: 30,
     },
 
-    1200: {
+    991: {
       slidesPerView: 8,
 
       spaceBetween: 30,

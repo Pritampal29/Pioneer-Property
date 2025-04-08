@@ -248,7 +248,7 @@
 }
 
 .offcanvas {
-  background: #1a1a1a;
+  background: rgba(255, 255, 255, 0.831372549);
   width: 100%;
   max-width: 450px;
 }
@@ -257,7 +257,7 @@
   background: none;
   border: 0;
   font-size: 18px;
-  color: #ffffff;
+  color: #000;
   transition: all 0.3s linear;
 }
 .offcanvas-header .close-btn:hover {
@@ -281,7 +281,7 @@
 .offcanvas-menu .main-menu li {
   position: relative;
   margin-bottom: 5px;
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #000;
 }
 .offcanvas-menu .main-menu li:last-child {
   border-bottom: 0;
@@ -289,8 +289,8 @@
 .offcanvas-menu .main-menu li a {
   display: block;
   font-size: 16px;
-  font-weight: 600;
-  color: #ffffff;
+  font-weight: 500;
+  color: #000;
   padding: 5px 0px;
   position: relative;
 }
@@ -309,7 +309,7 @@
   content: "";
   width: 16px;
   height: 2px;
-  background-color: #fff;
+  background-color: #000;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -323,7 +323,7 @@
   left: 50%;
   top: 50%;
   bottom: 0;
-  background-color: #fff;
+  background-color: #000;
   transform: translate(-50%, -50%);
   transition: all 0.3s linear;
 }
@@ -682,12 +682,13 @@
   height: 100%;
 }
 .contact .cont_right::after {
+  display: none;
   content: "";
   position: absolute;
   width: 100%;
   height: 100%;
   background-color: #bb2026;
-  opacity: 0.8;
+  opacity: 0.9;
   top: 0;
   left: 0;
   z-index: 0;
@@ -695,7 +696,7 @@
 .contact .cont_right h2 {
   font-size: 12px;
   text-transform: math-auto;
-  color: #ffffff;
+  color: #000;
   font-weight: bold;
   z-index: 1;
   position: relative;
@@ -706,28 +707,30 @@
   z-index: 1;
 }
 .contact .cont_right ul li {
-  color: #fff;
+  color: #000;
   margin-bottom: 55px;
 }
 .contact .cont_right ul li .img_box {
   width: 40px;
   aspect-ratio: 1;
-  background-color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
   float: left;
   margin-right: 20px;
-  padding: 10px;
+  padding: 0;
 }
 .contact .cont_right ul li p {
   font-size: 12px;
   font-weight: bold;
   margin-bottom: 0;
+  color: #000;
 }
 .contact .cont_right ul li span {
   font-size: 12px;
+  color: #000;
   font-weight: 300;
+  display: inline-block;
 }
 .contact input {
   background-color: #f6f6f6 !important;
@@ -881,8 +884,9 @@
 /*           Partner CSS
 /*----------------------------------------*/
 .partner {
-  background-color: #cad1e1;
+  background-color: #f8f4f1;
   padding: 25px 20px;
+  border-top: 1px solid #e2e2e2;
 }
 
 /*----------------------------------------*/
@@ -1154,6 +1158,9 @@
   font-weight: 400;
   color: #bb2026;
 }
+.listing_card .cont_box .top .prop_price.price_btn {
+  white-space: nowrap;
+}
 .listing_card .cont_box p {
   font-size: 15px;
   font-weight: 400;
@@ -1187,7 +1194,7 @@
   margin-bottom: 15px;
 }
 .listing_card .cont_box .details_box .details {
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 400;
   color: #071c1f;
   border-bottom: 1px solid #ddd;
@@ -2660,9 +2667,6 @@ h2 {
   padding-bottom: 0px !important;
 }
 .feature.location_sec .area-container {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
   background-color: #fff;
   padding: 0px;
   border-radius: 10px;
@@ -3577,6 +3581,8 @@ h2 {
   color: #bb2026;
   transition: 0.3s all;
   -webkit-transition: 0.3s all;
+  aspect-ratio: 1;
+  width: 43px;
 }
 .listing_search_btn:hover {
   color: #333;
@@ -4565,7 +4571,7 @@ h2 {
   top: -75px;
   bottom: 100%;
   display: none;
-  width: 852px;
+  width: 650px;
   right: -52px;
 }
 .filter_li_home .nice-select .list {
@@ -4654,7 +4660,7 @@ h2 {
 }
 
 .mobile_search {
-  position: absolute;
+  position: fixed;
   width: 100%;
   height: auto;
   display: none;
@@ -4760,6 +4766,7 @@ h2 {
   font-weight: bold;
   color: white;
   line-height: 1.5;
+  margin-bottom: -5px;
 }
 .new_card .details .price span {
   font-size: 14px;
@@ -4829,7 +4836,7 @@ h2 {
 }
 
 .section-top_footer {
-  background-color: rgba(187, 32, 38, 0.8);
+  background-color: #eee1cf;
   padding-block: 15px;
   position: fixed;
   bottom: 0;
@@ -4837,6 +4844,12 @@ h2 {
   width: 100%;
   z-index: 99;
   display: none;
+}
+.section-top_footer .wpcf7-list-item-label {
+  color: #415674;
+}
+.section-top_footer input {
+  border: 1px solid #415674 !important;
 }
 .section-top_footer .wpcf7-list-item {
   margin-left: 0;
@@ -4866,7 +4879,7 @@ h2 {
   max-width: 1100px;
 }
 .section-top_footer .section_title__heading {
-  color: #fff;
+  color: #000000;
   font-size: 16px;
   text-align: center;
   margin-bottom: 18px;
@@ -4945,4 +4958,197 @@ h2 {
 .blog_slider a {
   display: block;
   width: 100%;
+}
+
+#areasizeCat {
+  padding: 5px;
+  line-height: 42px;
+  height: 42px;
+  border: unset;
+  font-size: 15px;
+}
+#areasizeCat::-moz-placeholder {
+  font-size: 15px;
+}
+#areasizeCat::placeholder {
+  font-size: 15px;
+}
+
+.section-top_footer .section_title__heading {
+  position: relative;
+}
+
+.frm_close {
+  border-radius: 50px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  width: 30px;
+  height: 30px;
+  background-color: rgba(187, 32, 38, 0.8);
+  color: #fff;
+  outline: none;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -27px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.frm_close_show {
+  display: flex;
+}
+
+.add_padd {
+  padding-top: 10px;
+}
+
+.frm_show {
+  display: block !important;
+}
+
+.loc-dtls-land {
+  margin-block: 16px;
+}
+.loc-dtls-land ul li {
+  padding-inline: 10px;
+  position: relative;
+}
+.loc-dtls-land ul li:after {
+  content: "";
+  width: 1px;
+  height: 14px;
+  background-color: #656565;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  position: absolute;
+}
+.loc-dtls-land ul li p {
+  margin-bottom: 0;
+}
+.loc-dtls-land ul li:last-child:after {
+  display: none;
+}
+
+.tnxpage {
+  background-color: #f8f8f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tnxpage .thank-you-content {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+.tnxpage .thank-you-content h2 {
+  font-size: 36px;
+  color: #bb2026;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+.tnxpage .thank-you-content p {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 10px;
+}
+.tnxpage .thank-you-content h5 {
+  font-size: 20px;
+  color: #222;
+  margin-top: 10px;
+}
+.tnxpage .thank-you-content .frm_dtls {
+  background: #f1f1f1;
+  padding: 20px 80px;
+  border-radius: 8px;
+  margin: 12px auto;
+  display: inline-block;
+  text-align: left;
+}
+.tnxpage .thank-you-content .frm_dtls p {
+  margin: 5px 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: #555;
+}
+.tnxpage .thank-you-content a {
+  color: #bb2026;
+  font-weight: 600;
+  transition: all 0.3s ease-in-out;
+}
+.tnxpage .thank-you-content a:hover {
+  text-decoration: underline;
+}
+
+.thxpage_dir h2 {
+  font-size: 36px;
+  color: #bb2026;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+.thxpage_dir p {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.banner-text {
+  top: 50%;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  background-color: rgba(187, 32, 38, 0.5);
+  padding: 5px 15px;
+}
+.banner-text h1 {
+  font-size: 30px;
+}
+
+.single-property .card {
+  border: unset;
+}
+.single-property .card-image iframe {
+  width: 100%;
+  height: 100%;
+}
+
+.section-top_footer #wpcf7-f1306-o3 .wpcf7-response-output,
+.section-top_footer #wpcf7-f1306-o3 .wpcf7-form-control-wrap .wpcf7-not-valid-tip {
+  color: #ff0000 !important;
+}
+
+.category-report .blog_card,
+.category-journal .blog_card,
+.category-blog .blog_card {
+  height: auto !important;
+}
+
+.single-post .wo_hr_line .banner-content h1::after {
+  width: calc(100% - 60px);
+  bottom: -8px;
+}
+
+.single-post .banner-content h1 {
+  display: inline-block;
+}
+
+#dnldModal .btn-close {
+  background-image: none;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+  opacity: 1;
+  position: relative;
+  right: 15px;
+  bottom: 3px;
+}
+
+.listing_card .cont_box .top .prop_name,
+.listing_card .cont_box .top .prop_price {
+  font-size: 17px;
 }/*# sourceMappingURL=style.css.map */
